@@ -3,13 +3,9 @@ Command:
   Game:
     Joined: '&e<player>&7加入了 生化模式'
     Left: '&c<player>&7離開了 生化模式'
-    Join: '&a你&7加入了 生化模式'
-    Leave: '&c你&7離開了 生化模式'
-    Voted: '&e<player>&a選擇了地圖 &c<arena>'
   Admin:
     End: '&c你&7強制結束了 &7<lobby>&c 的遊戲'
     Start: '&a你&7強制開始了 &7<lobby> &a的遊戲'
-    Reloaded: '&a你&7重新載入了所有設定'
 Error:
   Command:
     countdown-cancel: "&c人數不足，已取消倒數。"
@@ -23,13 +19,10 @@ Error:
     Already Started: '&c噢 遊戲進行中'
     Not Enough Players: '&c這裡的人數不足以繼續進行遊戲'
     Not Started: '&c噢 遊戲尚未開始'
-    Requires Empty Inventory: '&c請先清理好背包再加入遊戲'
     Not An Infected: '&c只有&4生化幽靈&c才可以自殺'
-  Misc:
-    Invalid Permission: '&c你沒有足夠的權限'
-    Cant Use Command: '&c你不能使用這個指令'
 Game:
-  Compass Name: '&f人類追蹤羅盤'
+  Start: "&a倒數開始，請選擇遊戲地圖！"
+  Start-Title: "&4&lMcInfected"
   KillStreak: "玩家&6<player>&7達到了&x<killstreak>&7&l KILL！"
   Arena Selected: '&7即將前往 >&c<arena>&7'
   Infecting: '&5生化病毒即將散播...'
@@ -41,7 +34,7 @@ Game:
   Time:
     Voting: '&7選擇時間尚餘&f<time>'
     Infecting: '&7生化幽靈將出現於&f<time>後。'
-    PreGame: "&7本場將在&4<time>後開始"
+    PreGame: "&7本場將在&4 5秒 &7後開始"
     Game: '&7本場將在&f<time>&7後完結'
 Picture:
   Human:

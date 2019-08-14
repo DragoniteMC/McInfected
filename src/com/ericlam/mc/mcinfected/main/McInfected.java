@@ -9,6 +9,9 @@ import com.ericlam.mc.mcinfected.implement.mechanic.McInfPlayerMechanic;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.manager.KitManager;
+import com.ericlam.mc.minigames.core.character.TeamPlayer;
+import com.ericlam.mc.minigames.core.event.section.GamePreStartEvent;
+import com.ericlam.mc.minigames.core.game.InGameState;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.registable.Compulsory;
 import com.hypernite.mc.hnmc.core.builders.InventoryBuilder;
@@ -17,14 +20,29 @@ import com.hypernite.mc.hnmc.core.managers.ConfigManager;
 import com.hypernite.mc.hnmc.core.misc.commands.AdvCommandNodeBuilder;
 import com.hypernite.mc.hnmc.core.misc.commands.CommandNode;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class McInfected extends JavaPlugin {
+public class McInfected extends JavaPlugin implements Listener {
 
     private static ConfigManager configManager;
     private static KitManager kitManager;
     private HumanTeam humanTeam = new HumanTeam();
     private ZombieTeam zombieTeam = new ZombieTeam();
+    private InGameState preStartState = new InGameState("preStart", null);
+
+    public InGameState getPreStartState() {
+        return preStartState;
+    }
+
+    public HumanTeam getHumanTeam() {
+        return humanTeam;
+    }
+
+    public ZombieTeam getZombieTeam() {
+        return zombieTeam;
+    }
 
     public static ConfigManager config(){
         return configManager;
@@ -62,11 +80,17 @@ public class McInfected extends JavaPlugin {
 
         HyperNiteMC.getAPI().getCommandRegister().registerCommand(this, testCommand);
         getServer().getPluginManager().registerEvents(new McInfListener(), this);
+        getServer().getPluginManager().registerEvents(this, this);
     }
 
 
     @Override
     public void onDisable() {
         super.onDisable();
+    }
+
+    @EventHandler
+    public void onPreStart(GamePreStartEvent e) {
+        e.getGamingPlayer().forEach(p -> p.castTo(TeamPlayer.class).setTeam(humanTeam));
     }
 }

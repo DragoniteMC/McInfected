@@ -3,7 +3,6 @@ package com.ericlam.mc.mcinfected.manager;
 import com.ericlam.mc.mcinfected.Kit;
 import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
-import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.shampaggon.crackshot.CSUtility;
 import me.DeeCaaD.CrackShotPlus.CSPapi;
 import me.libraryaddict.disguise.DisguiseAPI;
@@ -90,15 +89,20 @@ public class KitManager {
         return kitMap;
     }
 
+    public static void removeLastKit(Player target) {
+        PlayerInventory playerInventory = target.getInventory();
+        playerInventory.clear();
+        target.getActivePotionEffects().forEach(e -> target.removePotionEffect(e.getType()));
+        DisguiseAPI.undisguiseToAll(target);
+    }
+
     public void gainKit(McInfPlayer player) {
         String kit = player.getTeam() instanceof HumanTeam ? player.getHumanKit() : player.getZombieKit();
         Kit infKit = Optional.ofNullable(kitMap.get(kit)).orElseThrow(() -> new IllegalStateException("No this kit in map"));
         Player target = player.getPlayer();
         PlayerInventory playerInventory = target.getInventory();
         //clear previous
-        playerInventory.clear();
-        target.getActivePotionEffects().forEach(e->target.removePotionEffect(e.getType()));
-        DisguiseAPI.undisguiseToAll(target);
+        removeLastKit(target);
         //insert current
         playerInventory.setArmorContents(infKit.getArmors());
         playerInventory.addItem(infKit.getInventory());
