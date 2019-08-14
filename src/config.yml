@@ -1,0 +1,31 @@
+time:
+  game: 150
+  infecting: 25
+  voting: 60
+
+game:
+  alpha-percent: 0.25
+  auto-start: 2
+  max-round: 8
+
+default-kit:
+  human: Assaulter
+  zombie: Speeder
+
+fallback-server: inflobby
+
+compass-give-in-sec: 65
+
+Sounds:
+  Voting:
+    Countdown: BLOCK_NOTE_HAT:1:0
+    Final: ENTITY_ELDER_GUARDIAN_CURSE:1:1
+  Infecting:
+    Countdown: BLOCK_NOTE_HAT:1:0
+    Final: BLOCK_ANVIL_USE:1:1
+  Game:
+    Countdown: BLOCK_NOTE_HAT:1:0
+    Final: BLOCK_NOTE_HARP:1:2
+  Compass: ENTITY_HORSE_SADDLE:1:0.75
+  Infected: ENTITY_ZOMBIE_AMBIENT:1:1
+  Respawn: ENTITY_ENDERDRAGON_SHOOT:1:1

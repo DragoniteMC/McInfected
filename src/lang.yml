@@ -1,0 +1,71 @@
+prefix: '&4生化模式// &7'
+Command:
+  Game:
+    Joined: '&e<player>&7加入了 生化模式'
+    Left: '&c<player>&7離開了 生化模式'
+    Join: '&a你&7加入了 生化模式'
+    Leave: '&c你&7離開了 生化模式'
+    Voted: '&e<player>&a選擇了地圖 &c<arena>'
+  Admin:
+    End: '&c你&7強制結束了 &7<lobby>&c 的遊戲'
+    Start: '&a你&7強制開始了 &7<lobby> &a的遊戲'
+    Reloaded: '&a你&7重新載入了所有設定'
+Error:
+  Command:
+    countdown-cancel: "&c人數不足，已取消倒數。"
+    Suicide Not Cooled Down: '&c噢 你也太喜歡自虐了 請稍候再嘗試自殺'
+    Vote:
+      Last Played: '&c噢 你不能選擇上一次遊戲的地圖'
+      Not Enough Players: '&c噢 這張地圖需要&f<needed>&c個玩家才足夠'
+      Too Many Players: '&c噢, 你需要少於 &f<needed> &c位玩家才可玩此地圖!'
+    Cant Vote For This Map: '&c噢 你不能選擇這張地圖'
+  Game:
+    Already Started: '&c噢 遊戲進行中'
+    Not Enough Players: '&c這裡的人數不足以繼續進行遊戲'
+    Not Started: '&c噢 遊戲尚未開始'
+    Requires Empty Inventory: '&c請先清理好背包再加入遊戲'
+    Not An Infected: '&c只有&4生化幽靈&c才可以自殺'
+  Misc:
+    Invalid Permission: '&c你沒有足夠的權限'
+    Cant Use Command: '&c你不能使用這個指令'
+Game:
+  Compass Name: '&f人類追蹤羅盤'
+  KillStreak: "玩家&6<player>&7達到了&x<killstreak>&7&l KILL！"
+  Arena Selected: '&7即將前往 >&c<arena>&7'
+  Infecting: '&5生化病毒即將散播...'
+  Infected: '&e<player>&c成為了生化幽靈。'
+  Over:
+    Humans Win: '&6&lSOLDIER  WIN'
+    Infected Win: '&c&lGHOST  WIN'
+    Survivors: '&7倖存者: <humans>'
+  Time:
+    Voting: '&7選擇時間尚餘&f<time>'
+    Infecting: '&7生化幽靈將出現於&f<time>後。'
+    PreGame: "&7本場將在&4<time>後開始"
+    Game: '&7本場將在&f<time>&7後完結'
+Picture:
+  Human:
+    To Win: "&7你現在是傭兵！&a存活下來！"
+    You: '&7You are now a &6&lHuman'
+  Infected:
+    To Win: '&7你成為了 &c&l生化幽靈！&a感染所有人類吧！'
+    You: '&7You are now a &c&lGhost'
+Death Messages:
+  Human:
+    Melee:
+      - '&a<killer> &f&l쿿 &c<killed>&7'
+    Projectile:
+      - '&a<killer> f&l<arrow> &c<killed>&7'
+    Gun:
+      - '&a<killer> &e&l켗켘켙 &c<killed>&7'
+    Explosion:
+      - '&a<killer> &e쿽 &c<killed>&7'
+    Other:
+      - '&a<killer> &f쾸 &c<killed>&7'
+    Self:
+      - '&f쾸 &c<killed>&7'
+  Infected:
+    Normal:
+      - '&c<killer> &4&l☣ &a<killed>&7'
+    Self:
+      - '&f쾸 &c<killed>&7'
