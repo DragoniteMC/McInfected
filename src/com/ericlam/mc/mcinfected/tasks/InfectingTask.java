@@ -1,22 +1,40 @@
 package com.ericlam.mc.mcinfected.tasks;
 
+import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.main.McInfected;
 import com.ericlam.mc.mcinfected.main.SoundUtils;
+import com.ericlam.mc.minigames.core.character.TeamPlayer;
+import com.ericlam.mc.minigames.core.game.GameState;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
+import com.hypernite.mc.hnmc.core.utils.Tools;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.List;
 
 public class InfectingTask extends InfTask {
     @Override
     public void initRun(PlayerManager playerManager) {
+        MinigamesCore.getApi().getGameManager().setState(GameState.PRESTART);
         playerManager.getTotalPlayers().forEach(playerManager::setGamePlayer);
-        Bukkit.broadcastMessage(McInfected.config().getMessage("Game.Infecting"));
+        Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Game.Infecting"));
+        List<Location> locations = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("human");
+        playerManager.getGamePlayer().forEach(p -> {
+            p.castTo(McInfPlayer.class).setKillByMelee(false);
+            p.castTo(TeamPlayer.class).setTeam(mcinf.getHumanTeam());
+            VotingTask.bossBar.addPlayer(p.getPlayer());
+            p.getPlayer().teleportAsync(locations.get(Tools.randomWithRange(0, locations.size() - 1)));
+            p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
+        });
     }
 
     @Override
     public void onCancel() {
         GameEndTask.cancelGame(playerManager.getGamePlayer());
-        Bukkit.broadcastMessage(McInfected.config().getMessage("Error.Game.Not_Enough_Players"));
+        Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Error.Game.Not Enough Players"));
     }
 
     @Override
@@ -28,19 +46,22 @@ public class InfectingTask extends InfTask {
     public long run(long l) {
         if (l % 30 == 0 || l == 20 || l <= 5) {
             String time = MinigamesCore.getApi().getGameUtils().getTimeWithUnit(l);
-            Bukkit.broadcastMessage(McInfected.config().getMessage("Game.Infecting").replace("<time>", time));
+            Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Game.Time.Infecting").replace("<time>", time));
             SoundUtils.playInfectSound(false);
         }
+        int level = (int) l;
+        Bukkit.getOnlinePlayers().forEach(p -> p.setLevel(level));
+        VotingTask.updateBoard(l, playerManager.getGamePlayer(), "&a未感染");
         return l;
     }
 
     @Override
     public long getTotalTime() {
-        return McInfected.config().getData("infectingTime", Long.class).orElse(25L);
+        return McInfected.getApi().getConfigManager().getData("infectingTime", Long.class).orElse(25L);
     }
 
     @Override
     public boolean shouldCancel() {
-        return playerManager.getGamePlayer().size() < McInfected.config().getData("autoStart", Integer.class).orElse(2);
+        return playerManager.getGamePlayer().size() < McInfected.getApi().getConfigManager().getData("autoStart", Integer.class).orElse(2);
     }
 }

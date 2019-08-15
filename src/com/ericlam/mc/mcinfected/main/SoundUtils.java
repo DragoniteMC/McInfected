@@ -7,19 +7,21 @@ import org.bukkit.Bukkit;
 import javax.annotation.Nullable;
 
 public class SoundUtils {
-    private static ConfigManager cf = McInfected.config();
 
     public static void playVoteSound(boolean final_) {
+        ConfigManager cf = McInfected.getApi().getConfigManager();
         String[] voteCount = cf.getData("vote".concat(final_ ? "Final" : "Count"), String[].class).orElse(null);
         play(voteCount);
     }
 
     public static void playGameSound(boolean final_) {
+        ConfigManager cf = McInfected.getApi().getConfigManager();
         String[] gameCount = cf.getData("game".concat(final_ ? "Final" : "Count"), String[].class).orElse(null);
         play(gameCount);
     }
 
     public static void playInfectSound(boolean final_) {
+        ConfigManager cf = McInfected.getApi().getConfigManager();
         String[] infectCount = cf.getData("infect".concat(final_ ? "Final" : "Count"), String[].class).orElse(null);
         play(infectCount);
     }

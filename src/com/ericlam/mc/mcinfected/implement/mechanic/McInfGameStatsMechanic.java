@@ -21,7 +21,7 @@ public class McInfGameStatsMechanic implements GameStatsHandler {
 
     private final SQLDataSource sqlDataSource;
     private final String createTableStatement =
-            "CREATE TABLE IF NOT EXISTS `McInfected` (`uuid` VARCHAR(40) PRIMARY KEY NOT NULL, `name`TINYTEXT NOT NULL , `kills` MEDIUMINT DEFAULT 0, `deaths` MEDIUMINT DEFAULT 0, `wins` MEDIUMINT DEFAULT  0, `played` MEDIUMINT DEFAULT 0, `infected` MEDIUMINT DEFAULT 0, `loses` MEDIUMINT DEFAULT 0, `scores` DOUBLE DEFAULT 0)";
+            "CREATE TABLE IF NOT EXISTS `McInfected_stats` (`uuid` VARCHAR(40) PRIMARY KEY NOT NULL, `name`TINYTEXT NOT NULL , `kills` MEDIUMINT DEFAULT 0, `deaths` MEDIUMINT DEFAULT 0, `wins` MEDIUMINT DEFAULT  0, `played` MEDIUMINT DEFAULT 0, `infected` MEDIUMINT DEFAULT 0, `loses` MEDIUMINT DEFAULT 0, `scores` DOUBLE DEFAULT 0)";
     private final String selectStatement = "SELECT * FROM `McInfected_stats` WHERE `uuid`=? OR `name`=?";
     private final String saveStatement = "INSERT INTO `McInfected_stats` VALUES (?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `name`=?, `kills`=?, `deaths`=?, `wins`=?, `played`=?, `infected`=?, `loses`=?, `scores`=?";
     public McInfGameStatsMechanic(){

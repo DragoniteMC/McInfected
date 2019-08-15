@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.hypernite.mc.hnmc.core.config.ConfigSetter;
 import com.hypernite.mc.hnmc.core.config.Extract;
 import com.hypernite.mc.hnmc.core.utils.converters.LocationSerializer;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -45,6 +46,11 @@ public class McInfConfig extends ConfigSetter implements ArenaConfig {
     @Extract private String[] infected;
     @Extract private String[] respawn;
 
+    @Extract
+    private String[] skillLaunch;
+    @Extract
+    private String[] skillCooldown;
+
     private ConfigurationSection lobbySection;
 
     private final File folder;
@@ -68,7 +74,7 @@ public class McInfConfig extends ConfigSetter implements ArenaConfig {
         this.gameTime = config.getLong("time.game");
         this.infectingTime = config.getLong("time.infecting");
         this.votingTime = config.getLong("time.voting");
-        this.maxRound = config.getInt("time.max-round");
+        this.maxRound = config.getInt("game.max-round");
 
         this.alphaPercent = (float)config.getDouble("game.alpha-percent");
         this.autoStart = config.getInt("game.auto-start");
@@ -90,6 +96,9 @@ public class McInfConfig extends ConfigSetter implements ArenaConfig {
         this.compassGain = config.getString("Sounds.Compass").split(":");
         this.infected = config.getString("Sounds.Infected").split(":");
         this.respawn = config.getString("Sounds.Respawn").split(":");
+
+        this.skillLaunch = config.getString("Sounds.Skill.Launch").split(":");
+        this.skillCooldown = config.getString("Sounds.Skill.CoolDown").split(":");
 
         this.lobbySection = config.getConfigurationSection("lobby");
         this.fallbackSer = config.getString("fallback-server");
@@ -126,7 +135,7 @@ public class McInfConfig extends ConfigSetter implements ArenaConfig {
 
     @Override
     public String getGamePrefix() {
-        return prefix;
+        return prefix == null ? null : ChatColor.translateAlternateColorCodes('&', prefix);
     }
 
     @Override

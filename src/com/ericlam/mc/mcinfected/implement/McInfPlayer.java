@@ -3,6 +3,7 @@ package com.ericlam.mc.mcinfected.implement;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.main.McInfected;
+import com.ericlam.mc.mcinfected.tasks.VotingTask;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.game.GameTeam;
 import org.bukkit.attribute.Attribute;
@@ -16,13 +17,31 @@ public class McInfPlayer implements TeamPlayer {
     private GameTeam gameTeam;
     private Status status;
     private String humanKit, zombieKit;
+    private boolean isKillByMelee;
 
     public McInfPlayer(Player player, GameTeam gameTeam, Status status) {
         this.player = player;
+        player.setFoodLevel(20);
+        player.setWalkSpeed(0.2f);
+        player.setGlowing(false);
+        Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> {
+            a.setBaseValue(20);
+            player.setHealth(a.getBaseValue());
+            player.setHealthScale(a.getBaseValue());
+        });
         this.gameTeam = gameTeam;
         this.status = status;
-        this.humanKit = McInfected.config().getData("humanDefault", String.class).orElse("");
-        this.zombieKit = McInfected.config().getData("zombieDefault", String.class).orElse("");
+        this.humanKit = McInfected.getApi().getConfigManager().getData("humanDefault", String.class).orElse("");
+        this.zombieKit = McInfected.getApi().getConfigManager().getData("zombieDefault", String.class).orElse("");
+        this.isKillByMelee = false;
+    }
+
+    public boolean isKillByMelee() {
+        return isKillByMelee;
+    }
+
+    public void setKillByMelee(boolean killByMelee) {
+        isKillByMelee = killByMelee;
     }
 
     public McInfPlayer(Player player){
@@ -57,13 +76,18 @@ public class McInfPlayer implements TeamPlayer {
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
                 a.setBaseValue(200);
                 player.setHealth(a.getBaseValue());
+                player.setHealthScale(a.getBaseValue());
             });
+            player.setWalkSpeed(0.265f);
         }else if (gameTeam instanceof HumanTeam){
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
                 a.setBaseValue(20);
                 player.setHealth(a.getBaseValue());
+                player.setHealthScale(a.getBaseValue());
             });
+            player.setWalkSpeed(0.2f);
         }
+        VotingTask.switchTeam(this);
     }
 
     @Override

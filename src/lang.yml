@@ -1,24 +1,17 @@
 prefix: '&4生化模式// &7'
 Command:
   Game:
-    Joined: '&e<player>&7加入了 生化模式'
     Left: '&c<player>&7離開了 生化模式'
-  Admin:
-    End: '&c你&7強制結束了 &7<lobby>&c 的遊戲'
-    Start: '&a你&7強制開始了 &7<lobby> &a的遊戲'
+  Kit:
+    Choose: '&a選擇<kit>'
+    Chosen: '&a你選擇了在&7<team>&a狀態時使用&7<kit>'
 Error:
   Command:
     countdown-cancel: "&c人數不足，已取消倒數。"
     Suicide Not Cooled Down: '&c噢 你也太喜歡自虐了 請稍候再嘗試自殺'
-    Vote:
-      Last Played: '&c噢 你不能選擇上一次遊戲的地圖'
-      Not Enough Players: '&c噢 這張地圖需要&f<needed>&c個玩家才足夠'
-      Too Many Players: '&c噢, 你需要少於 &f<needed> &c位玩家才可玩此地圖!'
-    Cant Vote For This Map: '&c噢 你不能選擇這張地圖'
   Game:
     Already Started: '&c噢 遊戲進行中'
     Not Enough Players: '&c這裡的人數不足以繼續進行遊戲'
-    Not Started: '&c噢 遊戲尚未開始'
     Not An Infected: '&c只有&4生化幽靈&c才可以自殺'
 Game:
   Start: "&a倒數開始，請選擇遊戲地圖！"
@@ -31,12 +24,19 @@ Game:
     Humans Win: '&6&lSOLDIER  WIN'
     Infected Win: '&c&lGHOST  WIN'
     Survivors: '&7倖存者: <humans>'
+    Result:
+      Draw: "&e&lGAME DRAW"
+      Infected: "&c&lGHOST WON THE GAME"
+      Human: "&a&lSOLDER WON THE GAME"
   Time:
     Voting: '&7選擇時間尚餘&f<time>'
     Infecting: '&7生化幽靈將出現於&f<time>後。'
     PreGame: "&7本場將在&4 5秒 &7後開始"
     Game: '&7本場將在&f<time>&7後完結'
 Picture:
+  Bar:
+    Title: "&c&lGhost <z> &7&l|&a&l <h> Human"
+    Mp: "&7(MatchPoint)&r"
   Human:
     To Win: "&7你現在是傭兵！&a存活下來！"
     You: '&7You are now a &6&lHuman'
@@ -45,20 +45,11 @@ Picture:
     You: '&7You are now a &c&lGhost'
 Death Messages:
   Human:
-    Melee:
-      - '&a<killer> &f&l쿿 &c<killed>&7'
-    Projectile:
-      - '&a<killer> f&l<arrow> &c<killed>&7'
-    Gun:
-      - '&a<killer> &e&l켗켘켙 &c<killed>&7'
-    Explosion:
-      - '&a<killer> &e쿽 &c<killed>&7'
-    Other:
-      - '&a<killer> &f쾸 &c<killed>&7'
-    Self:
-      - '&f쾸 &c<killed>&7'
+    Melee: '&a<killer> &f&l쿿 &c<killed>&7'
+    Projectile: '&a<killer> f&l🏹 &c<killed>&7'
+    Gun: '&a<killer> &e&l켗켘켙 &c<killed>&7'
+    Explosion: '&a<killer> &e쿽 &c<killed>&7'
+    Other: '&a<killer> &f쾸 &c<killed>&7'
   Infected:
-    Normal:
-      - '&c<killer> &4&l☣ &a<killed>&7'
-    Self:
-      - '&f쾸 &c<killed>&7'
+    Normal: '&c<killer> &4&l☣ &a<killed>&7'
+  Self: '&f쾸 &c<killed>&7'

@@ -3,7 +3,9 @@ package com.ericlam.mc.mcinfected.manager;
 import com.ericlam.mc.mcinfected.Kit;
 import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
+import com.ericlam.mc.mcinfected.main.McInfected;
 import com.shampaggon.crackshot.CSUtility;
+import me.DeeCaaD.CrackShotPlus.API;
 import me.DeeCaaD.CrackShotPlus.CSPapi;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
@@ -20,12 +22,15 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class KitManager {
     private final Map<String, Kit> kitMap = new LinkedHashMap<>();
-    private CSUtility csUtility = new CSUtility();
+    private final Map<Player, String> currentKit = new ConcurrentHashMap<>();
+    private CSUtility csUtility = API.cs();
 
 
     public KitManager(FileConfiguration kitConfig) {
@@ -38,7 +43,7 @@ public class KitManager {
         if (humanSection == null) return;
         for (String kit : humanSection.getKeys(false)) {
             List<String> armor = humanSection.getStringList(kit.concat(".Armor"));
-            String display = humanSection.getString("display");
+            String display = humanSection.getString(kit.concat(".Display"));
             List<String> csItems = humanSection.getStringList(kit.concat(".Inventory.Crackshot"));
             List<String> items = humanSection.getStringList(kit.concat(".Inventory.Normal"));
             List<String> description = humanSection.getStringList(kit.concat(".Description")).stream().map(e -> ChatColor.translateAlternateColorCodes('&', e)).collect(Collectors.toList());
@@ -71,7 +76,7 @@ public class KitManager {
                 if (type == null) return null;
                 int dur = Integer.parseInt(s[1]);
                 int amp = Integer.parseInt(s[2]);
-                return new PotionEffect(type, dur, amp, false, false);
+                return new PotionEffect(type, dur * 20, amp, false, false);
             }).filter(Objects::nonNull).collect(Collectors.toList());
             Kit kits = new Kit(display == null ? kit : ChatColor.translateAlternateColorCodes('&', display), armors, stacks.toArray(ItemStack[]::new), description, iconItem, potionsEffect);
             if (disguise != null){
@@ -89,9 +94,8 @@ public class KitManager {
         return kitMap;
     }
 
-    public static void removeLastKit(Player target) {
-        PlayerInventory playerInventory = target.getInventory();
-        playerInventory.clear();
+    public void removeLastKit(Player target, boolean invClear) {
+        if (invClear) target.getInventory().clear();
         target.getActivePotionEffects().forEach(e -> target.removePotionEffect(e.getType()));
         DisguiseAPI.undisguiseToAll(target);
     }
@@ -102,7 +106,7 @@ public class KitManager {
         Player target = player.getPlayer();
         PlayerInventory playerInventory = target.getInventory();
         //clear previous
-        removeLastKit(target);
+        removeLastKit(target, true);
         //insert current
         playerInventory.setArmorContents(infKit.getArmors());
         playerInventory.addItem(infKit.getInventory());
@@ -111,5 +115,18 @@ public class KitManager {
         Disguise disguise = new MobDisguise(DisguiseType.getType(infKit.getDisguise()));
         DisguiseAPI.setViewDisguiseToggled(target, false);
         DisguiseAPI.disguiseToAll(target, disguise);
+        this.currentKit.put(player.getPlayer(), kit);
+        if (player.getTeam() instanceof HumanTeam) {
+            player.getPlayer().sendMessage(McInfected.getApi().getConfigManager().getMessage("Picture.Human.To Win"));
+            player.getPlayer().sendTitle("", McInfected.getApi().getConfigManager().getPureMessage("Picture.Human.You"), 0, 60, 20);
+        } else {
+            player.getPlayer().sendMessage(McInfected.getApi().getConfigManager().getMessage("Picture.Infected.To Win"));
+            player.getPlayer().sendTitle("", McInfected.getApi().getConfigManager().getPureMessage("Picture.Infected.You"), 0, 60, 20);
+        }
+    }
+
+    @Nullable
+    public String getCurrentUsing(Player player) {
+        return currentKit.get(player);
     }
 }

@@ -17,8 +17,8 @@ Human:
         - machinegunAMMO:52
         - handgunAMMO:60
       Normal: []
+    Display: '&e機槍手'
     Description:
-      - 選擇 機槍手
       - 擁有彈藥量最多的兵種。每輪有100發。
       - 火力強大，可惜M249的重載時間需要六秒左右....
       - 精準度頗高。
@@ -31,8 +31,8 @@ Human:
         - Smoke:1
       Normal:
         - DIAMOND_SWORD
+    Display: '&e幽靈獵手'
     Description:
-      - 選擇 幽靈獵手
       - 擁有比起一般兵種更加強大的免疫能力，攻擊能力。
       - 被賦予專斬擊生化幽靈的獵殺之劍，攻擊力異常強大。
       - 由於免疫與力量強大，因此不需配備槍械。
@@ -40,8 +40,8 @@ Human:
     Icon: ghosthunterknife
   Assaulter:
     Armor: []
+    Display: '&e步槍手'
     Description:
-      - 選擇 步槍手
       - 配備AK-47步槍的步槍兵，決心與生化幽靈決一死鬥。
       - AK-47火力較猛，攻擊力也不遜，每輪四十發。
       - 傭兵一人不敵生化幽靈，適宜集體防守。
@@ -82,15 +82,15 @@ Human:
     Armor: []
     Potions:
       - STRENGTH:99998:1
+    Display: '&e榴彈槍手'
     Description:
-      - 選擇 榴彈槍手
       - 只要少數精英可配備的GAULL-G掛裝榴彈發射器，
       - 攻擊力雖然稍遜，但是卻有很高的射速和精準度，
       - 且榴彈對於生化幽靈的殺傷力十分強大，適宜大力壓制僵屍，
       - 以及帶領整個傭兵團隊。
   Shoter:
+    Display: '&e散彈槍手'
     Description:
-      - 選擇 散彈槍手
       - 散彈槍對於壓制僵屍，以及近程攻擊持有極大的優勢。
       - 攻擊力也不遜，且配備連噴裝置。
       - 火力強大時，有利壓制僵屍。
@@ -112,8 +112,8 @@ Human:
       - type:2 duration:1 amplifier:1
     Icon: SPAS
   Sniper:
+    Display: '&e狙擊手'
     Description:
-      - 選擇 狙擊手
       - 配備聞風喪膽的狙擊槍
       - ，最高攻擊力可達幽靈總血量的1/2[鐵巨人1/3]
       - 但巴雷特重量極大，因此走路緩慢。
@@ -135,8 +135,8 @@ Human:
       - type:2 duration:1 amplifier:1
     Icon: barrett
   Pyro:
+    Display: '&e火焰兵'
     Description:
-      - 選擇 火焰兵
       - 曾經是世界上最恐怖的縱火狂魔
       - 傭兵們為了擊退生化軍團而開始接受他們
       - 火焰噴射器裝有縱火性極高的火焰藥粉
@@ -171,10 +171,8 @@ Infected:
       Crackshot:
         - ghostweapons
       Normal: []
-    Potions:
-      - SPEED:99998:2
+    Display: '&e極速生化幽靈'
     Description:
-      - 選擇 極速生化幽靈
       - 此幽靈為默認的生化幽靈。
       - 它比起其他幽靈擁有更異於常人般的速度，
       - 通常傭兵們都難以逃避它。
@@ -186,8 +184,8 @@ Infected:
       Crackshot:
         - ghostweapons
       Normal: []
+    Display: '&e鐵巨人'
     Description:
-      - 選擇 鐵巨人
       - 此幽靈的速度比起一般的幽靈低，
       - 卻擁有比普通幽靈超出兩倍的血量值，絕對是幽靈獵手的剋星。
     Icon: ghostnausea
@@ -199,10 +197,8 @@ Infected:
         - ghostjump
         - ghostweapons
       Normal: []
-    Potions:
-      - SPEED:99999:1
+    Display: '&e跳躍僵屍'
     Description:
-      - 選擇 跳躍僵屍
       - 此幽靈擁有異常的彈跳能力，
       - 絕對是破防的最佳能力。
     Icon: ghostjump
@@ -214,16 +210,14 @@ Infected:
         - ghostblack
         - ghostweapons
       Normal: []
-    Potions:
-      - SPEED:99996:1
+    Display: '&e迷霧幽靈'
     Description:
-      - 選擇 迷霧幽靈
       - 身體唯一可以釋出煙霧的生化幽靈。
       - 能在一瞬間令周遭玩家失明。
     Icon: ghostblack
   SkletSniper:
+    Display: '&e狙擊骷髏'
     Description:
-      - 選擇 狙擊骷髏
       - 一個可以使用遠端攻擊的生化幽靈。
       - 此幽靈攻擊力較低。
       - 適宜遠處捕捉，是不為人知的暗殺者。
@@ -232,14 +226,12 @@ Infected:
         - ghostarrow
       Normal: []
     Armor: []
-    Potions:
-      - SPEED:99997:1
     Disguise: SKELETON
     KillStreaks: {}
     Icon: ghostarrow
   ChemWitch:
+    Display: '&e化學毒巫'
     Description:
-      - 選擇 化學毒巫
       - 據說之前，生化實驗室發生了洩漏事故....
       - 一名化學女教授在生化病毒中被感染，發生了基因變異....
       - 擁有著大量的生化藥水，和協助其他僵屍的自制藥水...
@@ -249,18 +241,14 @@ Infected:
         - ghostslow
         - ghostweapons
       Normal: []
-    Potions:
-      - SPEED:99998:1
     Disguise: WITCH
     Icon: ghostslow
   Exploder:
+    Display: '&e自爆幽靈'
     Description:
-      - 選擇 自爆幽靈
       - 擁有自爆能力的生化幽靈,
       - 對於近戰的傭兵來說,這是一個災難;
       - 因為爆炸可產生強大的威力！！
-    Potions:
-      - SPEED:99996:1
     Disguise: CREEPER
     Armor: []
     Inventory:
