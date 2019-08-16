@@ -88,6 +88,10 @@ public class GameEndTask extends InfTask {
 
     @Override
     public long run(long l) {
+        if (l == 4) {
+            VotingTask.bossBar.setVisible(true);
+            VotingTask.hunterBossBar.setVisible(false);
+        }
         return l;
     }
 

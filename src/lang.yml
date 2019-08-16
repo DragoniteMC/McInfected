@@ -35,8 +35,9 @@ Game:
     Game: '&7本場將在&f<time>&7後完結'
 Picture:
   Bar:
-    Title: "&c&lGhost <z> &7&l|&a&l <h> Human"
-    Mp: "&7(MatchPoint)&r"
+    Title: "&c&l生化幽靈 <z> &7&l:&a&l <h> 人類傭兵"
+    Mp: "&7決勝點"
+    Hunter: "&c&l生化幽靈 <z> &7&l:&b&l <h> 幽靈獵手"
   Human:
     To Win: "&7你現在是傭兵！&a存活下來！"
     You: '&7You are now a &6&lHuman'

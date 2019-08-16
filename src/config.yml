@@ -5,12 +5,14 @@ time:
 
 game:
   alpha-percent: 0.25
+  hunter-percent: 0.2
   auto-start: 2
   max-round: 8
 
 default-kit:
   human: Assaulter
   zombie: Speeder
+  hunter: Hunter
 
 fallback-server: inflobby
 
@@ -21,11 +23,16 @@ Sounds:
     Launch: ENTITY_ENDER_DRAGON_AMBIENT:1:0.7
     CoolDown: ENTITY_ENDER_DRAGON_FLAP:1:0.7
   Voting:
-    Countdown: BLOCK_NOTE_BLOCK_BELL:1:0
+    Countdown: BLOCK_NOTE_BLOCK_BELL:1:3
     Final: ENTITY_ELDER_GUARDIAN_CURSE:1:1
   Infecting:
-    Countdown: BLOCK_NOTE_BLOCK_BELL:1:0
+    Countdown: BLOCK_NOTE_BLOCK_BELL:1:3
     Final: BLOCK_ANVIL_USE:1:1
+  Hunter:
+    Active: ENTITY_BLAZE_DEATH:3:3
+    Burn: ENTITY_IRON_GOLEM_DEATH:3:0.3
+    Kill: ENTITY_ENDERMAN_DEATH:3:2
+    Death: ENTITY_ENDERMAN_DEATH:3:0.3
   Game:
     Countdown: BLOCK_NOTE_BLOCK_BELL:1:0
     Final: BLOCK_NOTE_BLOCK_BANJO:1:2

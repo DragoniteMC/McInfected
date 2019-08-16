@@ -25,6 +25,8 @@ public interface McInfectedAPI {
 
     void gainKit(McInfPlayer player);
 
+    void gainKit(Player target, String kit);
+
     String currentKit(Player player);
 
     void removePreviousKit(Player player, boolean invClear);

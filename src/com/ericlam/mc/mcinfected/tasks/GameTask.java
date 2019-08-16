@@ -12,16 +12,19 @@ import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class GameTask extends InfTask {
 
     static List<GamePlayer> alphasZombies = new ArrayList<>();
+    private boolean notifiedHunter = false;
 
     @Override
     public void initRun(PlayerManager playerManager) {
@@ -42,9 +45,18 @@ public class GameTask extends InfTask {
 
     }
 
+    public static boolean shouldHunterActivate(final List<GamePlayer> gamePlayers) {
+        if (gamePlayers.size() < 1) return false;
+        float hunterPercent = McInfected.getApi().getConfigManager().getData("hunterPercent", Float.class).orElse(0.2f);
+        List<GamePlayer> humans = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).collect(Collectors.toList());
+        int hunterSize = (int) Math.floor(gamePlayers.size() * hunterPercent);
+        return hunterSize >= humans.size();
+    }
+
     @Override
     public void onCancel() {
-        boolean noone = playerManager.getGamePlayer().size() + getZombieSpectator() < McInfected.getApi().getConfigManager().getData("autoStart", Integer.class).orElse(2);
+        this.onFinish();
+        boolean noone = playerManager.getGamePlayer().size() + getDeathGamer() < McInfected.getApi().getConfigManager().getData("autoStart", Integer.class).orElse(2);
         if (noone) {
             GameEndTask.cancelGame(playerManager.getGamePlayer());
             Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Error.Game.Not Enough Players"));
@@ -55,7 +67,7 @@ public class GameTask extends InfTask {
 
     @Override
     public void onFinish() {
-        SoundUtils.playGameSound(true);
+        this.notifiedHunter = false;
     }
 
     @Override
@@ -77,6 +89,17 @@ public class GameTask extends InfTask {
         Bukkit.getOnlinePlayers().forEach(p -> p.setLevel(level));
         VotingTask.bossBar.setProgress((double) l / getTotalTime());
         VotingTask.updateBoard(l, playerManager.getGamePlayer(), "&c母體已出現");
+        if (shouldHunterActivate(playerManager.getGamePlayer()) && !notifiedHunter) {
+            VotingTask.hunterBossBar.setVisible(true);
+            VotingTask.bossBar.setVisible(false);
+            VotingTask.updateHunterBossBar(playerManager.getGamePlayer());
+            playerManager.getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).forEach(g -> {
+                Player player = g.getPlayer();
+                McInfected.getApi().getConfigManager().getData("hunterActive", String[].class).ifPresent(s -> MinigamesCore.getApi().getGameUtils().playSound(player, s));
+                player.sendTitle("", "§a按 F 可以化身成幽靈獵手。", 0, 100, 0);
+            });
+            this.notifiedHunter = true;
+        }
         return l;
     }
 
@@ -85,13 +108,13 @@ public class GameTask extends InfTask {
         return McInfected.getApi().getConfigManager().getData("gameTime", Long.class).orElse(150L);
     }
 
-    private long getZombieSpectator() {
-        return playerManager.getSpectators().stream().filter(e -> e.castTo(McInfPlayer.class).isKillByMelee()).count();
+    private long getDeathGamer() {
+        return playerManager.getSpectators().stream().filter(e -> e.castTo(TeamPlayer.class).getTeam() != null).count();
     }
 
     @Override
     public boolean shouldCancel() {
-        boolean noone = playerManager.getGamePlayer().size() + getZombieSpectator() < McInfected.getApi().getConfigManager().getData("autoStart", Integer.class).orElse(2);
+        boolean noone = playerManager.getGamePlayer().size() + getDeathGamer() < McInfected.getApi().getConfigManager().getData("autoStart", Integer.class).orElse(2);
         boolean normalEnd = playerManager.getGamePlayer().stream().noneMatch(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam) || playerManager.getGamePlayer().stream().noneMatch(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam);
         return noone || normalEnd;
     }

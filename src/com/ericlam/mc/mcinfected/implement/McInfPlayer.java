@@ -17,7 +17,6 @@ public class McInfPlayer implements TeamPlayer {
     private GameTeam gameTeam;
     private Status status;
     private String humanKit, zombieKit;
-    private boolean isKillByMelee;
 
     public McInfPlayer(Player player, GameTeam gameTeam, Status status) {
         this.player = player;
@@ -33,15 +32,6 @@ public class McInfPlayer implements TeamPlayer {
         this.status = status;
         this.humanKit = McInfected.getApi().getConfigManager().getData("humanDefault", String.class).orElse("");
         this.zombieKit = McInfected.getApi().getConfigManager().getData("zombieDefault", String.class).orElse("");
-        this.isKillByMelee = false;
-    }
-
-    public boolean isKillByMelee() {
-        return isKillByMelee;
-    }
-
-    public void setKillByMelee(boolean killByMelee) {
-        isKillByMelee = killByMelee;
     }
 
     public McInfPlayer(Player player){
@@ -75,15 +65,15 @@ public class McInfPlayer implements TeamPlayer {
         if (gameTeam instanceof ZombieTeam){
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
                 a.setBaseValue(200);
-                player.setHealth(a.getBaseValue());
                 player.setHealthScale(a.getBaseValue());
+                player.setHealth(a.getBaseValue());
             });
             player.setWalkSpeed(0.265f);
         }else if (gameTeam instanceof HumanTeam){
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
                 a.setBaseValue(20);
-                player.setHealth(a.getBaseValue());
                 player.setHealthScale(a.getBaseValue());
+                player.setHealth(a.getBaseValue());
             });
             player.setWalkSpeed(0.2f);
         }

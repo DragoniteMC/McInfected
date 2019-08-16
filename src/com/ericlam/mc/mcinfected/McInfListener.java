@@ -1,11 +1,13 @@
 package com.ericlam.mc.mcinfected;
 
+import com.ericlam.mc.mcinfected.api.McInfectedAPI;
 import com.ericlam.mc.mcinfected.implement.McInfGameStats;
 import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.main.McInfected;
 import com.ericlam.mc.mcinfected.tasks.GameEndTask;
+import com.ericlam.mc.mcinfected.tasks.VotingTask;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.event.player.CrackShotDeathEvent;
@@ -15,6 +17,7 @@ import com.ericlam.mc.minigames.core.exception.gamestats.PlayerNotExistException
 import com.ericlam.mc.minigames.core.game.GameState;
 import com.ericlam.mc.minigames.core.game.GameTeam;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
+import com.ericlam.mc.minigames.core.manager.GameUtils;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
 import com.hypernite.mc.hnmc.core.utils.Tools;
 import me.DeeCaaD.CrackShotPlus.API;
@@ -125,8 +128,6 @@ public class McInfListener implements Listener {
                     CrackShotDeathEvent cs = (CrackShotDeathEvent) e;
                     if (API.getCSDirector().getBoolean(cs.getWeaponTitle() + ".Item_Information.Melee_Mode")) {
                         action = "Melee";
-                        victim.setTeam(null);
-                        victim.castTo(McInfPlayer.class).setKillByMelee(true);
                         MinigamesCore.getApi().getPlayerManager().setSpectator(victim);
                         player.sendTitle("", "§7你因被近身武器致死，無法復活。", 0, 60, 40);
                     } else if (cs.getBullet() instanceof TNTPrimed) {
@@ -161,10 +162,22 @@ public class McInfListener implements Listener {
             player.teleportAsync(respawn.get(Tools.randomWithRange(0, respawn.size() - 1)));
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
         } else if (victim.getTeam() instanceof HumanTeam) {
+            McInfectedAPI api = McInfected.getApi();
+            GameUtils utils = MinigamesCore.getApi().getGameUtils();
+            String using = api.currentKit(e.getGamePlayer().getPlayer());
+            if (using != null) {
+                String hunterKit = api.getConfigManager().getData("hunterKit", String.class).orElse("");
+                if (using.equals(hunterKit)) {
+                    api.getConfigManager().getData("hunterDeath", String[].class).ifPresent(s -> Bukkit.getOnlinePlayers().forEach(p -> utils.playSound(p, s)));
+                    MinigamesCore.getApi().getPlayerManager().setSpectator(victim);
+                    return;
+                }
+            }
             victim.setTeam(McInfected.getPlugin(McInfected.class).getZombieTeam());
             McInfected.getApi().removePreviousKit(player, true);
             McInfected.getApi().gainKit(victim.castTo(McInfPlayer.class));
         }
+        VotingTask.updateHunterBossBar(MinigamesCore.getApi().getPlayerManager().getGamePlayer());
 
     }
 }

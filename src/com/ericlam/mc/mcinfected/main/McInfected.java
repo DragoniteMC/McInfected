@@ -111,6 +111,11 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     }
 
     @Override
+    public void gainKit(Player target, String kit) {
+        kitManager.gainKit(target, kit);
+    }
+
+    @Override
     public String currentKit(Player player) {
         return kitManager.getCurrentUsing(player);
     }
@@ -134,6 +139,7 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         int row = (int) Math.ceil(kits.size() / 9);
         InventoryBuilder builder = new InventoryBuilder(row == 0 ? 1 : row, "&9選擇職業");
         kits.forEach((k, v) -> {
+            if (k.equals(configManager.getData("hunterKit", String.class).orElse(""))) return;
             v.getDescription().add(0, configManager.getPureMessage("Command.Kit.Choose").replace("<kit>", v.getDisplayName()));
             v.getDescription().add(1, " ");
             ItemStack stack = new ItemStackBuilder(v.getIcon()).displayName(v.getDisplayName()).lore(v.getDescription()).build();

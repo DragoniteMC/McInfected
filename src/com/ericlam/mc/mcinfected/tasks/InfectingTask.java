@@ -1,6 +1,5 @@
 package com.ericlam.mc.mcinfected.tasks;
 
-import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.main.McInfected;
 import com.ericlam.mc.mcinfected.main.SoundUtils;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
@@ -23,9 +22,9 @@ public class InfectingTask extends InfTask {
         Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Game.Infecting"));
         List<Location> locations = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("human");
         playerManager.getGamePlayer().forEach(p -> {
-            p.castTo(McInfPlayer.class).setKillByMelee(false);
             p.castTo(TeamPlayer.class).setTeam(mcinf.getHumanTeam());
             VotingTask.bossBar.addPlayer(p.getPlayer());
+            VotingTask.hunterBossBar.addPlayer(p.getPlayer());
             p.getPlayer().teleportAsync(locations.get(Tools.randomWithRange(0, locations.size() - 1)));
             p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
         });

@@ -10,6 +10,7 @@ import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.factory.scoreboard.GameBoard;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
+import com.hypernite.mc.hnmc.core.managers.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
@@ -24,6 +25,7 @@ public class VotingTask extends InfTask {
 
     private boolean loaded = false;
     static BossBar bossBar;
+    static BossBar hunterBossBar;
     private static GameBoard gameBoard;
     private Arena arena;
 
@@ -35,6 +37,15 @@ public class VotingTask extends InfTask {
     public static void switchTeam(TeamPlayer player) {
         if (gameBoard == null) return;
         gameBoard.switchTeam(player);
+    }
+
+    public static void updateHunterBossBar(List<GamePlayer> gamePlayers) {
+        long humans = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).count();
+        long zombies = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam).count();
+        String tit = McInfected.getApi().getConfigManager().getPureMessage("Picture.Bar.Hunter");
+        hunterBossBar.setTitle(tit.replace("<h>", "§k0").replace("<z>", "§k0"));
+        hunterBossBar.setColor(BarColor.RED);
+        new BossbarUpdateRunnable(hunterBossBar, humans, zombies).runTaskLater(McInfected.getPlugin(McInfected.class), 3L);
     }
 
     static void updateBoard(long l, List<GamePlayer> gamePlayers, String stats) {
@@ -66,7 +77,11 @@ public class VotingTask extends InfTask {
 
     @Override
     public void onFinish() {
-        bossBar = Bukkit.createBossBar(McInfected.getApi().getConfigManager().getPureMessage("Picture.Bar.Title").replace("<z>", "0").replace("<h>", "0"), BarColor.PURPLE, BarStyle.SOLID);
+        ConfigManager cf = McInfected.getApi().getConfigManager();
+        bossBar = Bukkit.createBossBar(cf.getPureMessage("Picture.Bar.Title").replace("<z>", "0").replace("<h>", "0"), BarColor.PURPLE, BarStyle.SOLID);
+        hunterBossBar = Bukkit.createBossBar(cf.getPureMessage("Picture.Bar.Hunter"), BarColor.WHITE, BarStyle.SOLID);
+        hunterBossBar.setProgress(0.5);
+        hunterBossBar.setVisible(false);
         gameBoard = MinigamesCore.getProperties().getGameFactory()
                 .getScoreboardFactory()
                 .setTitle(arena.getDisplayName().concat("§7 - §f00:00"))

@@ -13,6 +13,7 @@ import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
@@ -23,13 +24,16 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class KitManager {
     private final Map<String, Kit> kitMap = new LinkedHashMap<>();
-    private final Map<Player, String> currentKit = new ConcurrentHashMap<>();
+    private final Map<OfflinePlayer, String> currentKit = new ConcurrentHashMap<>();
     private CSUtility csUtility = API.cs();
 
 
@@ -98,12 +102,15 @@ public class KitManager {
         if (invClear) target.getInventory().clear();
         target.getActivePotionEffects().forEach(e -> target.removePotionEffect(e.getType()));
         DisguiseAPI.undisguiseToAll(target);
+        this.currentKit.remove(target);
     }
 
-    public void gainKit(McInfPlayer player) {
-        String kit = player.getTeam() instanceof HumanTeam ? player.getHumanKit() : player.getZombieKit();
-        Kit infKit = Optional.ofNullable(kitMap.get(kit)).orElseThrow(() -> new IllegalStateException("No this kit in map"));
-        Player target = player.getPlayer();
+    public void gainKit(Player target, String kit) {
+        Kit infKit = kitMap.get(kit);
+        if (infKit == null) {
+            McInfected.getProvidingPlugin(McInfected.class).getLogger().warning("There are no ".concat(kit).concat(" in kitMap"));
+            return;
+        }
         PlayerInventory playerInventory = target.getInventory();
         //clear previous
         removeLastKit(target, true);
@@ -111,11 +118,16 @@ public class KitManager {
         playerInventory.setArmorContents(infKit.getArmors());
         playerInventory.addItem(infKit.getInventory());
         target.addPotionEffects(infKit.getPotionEffects());
+        this.currentKit.put(target, kit);
         if (infKit.getDisguise() == EntityType.PLAYER) return;
         Disguise disguise = new MobDisguise(DisguiseType.getType(infKit.getDisguise()));
         DisguiseAPI.setViewDisguiseToggled(target, false);
         DisguiseAPI.disguiseToAll(target, disguise);
-        this.currentKit.put(player.getPlayer(), kit);
+    }
+
+    public void gainKit(McInfPlayer player) {
+        String kit = player.getTeam() instanceof HumanTeam ? player.getHumanKit() : player.getZombieKit();
+        this.gainKit(player.getPlayer(), kit);
         if (player.getTeam() instanceof HumanTeam) {
             player.getPlayer().sendMessage(McInfected.getApi().getConfigManager().getMessage("Picture.Human.To Win"));
             player.getPlayer().sendTitle("", McInfected.getApi().getConfigManager().getPureMessage("Picture.Human.You"), 0, 60, 20);

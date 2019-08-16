@@ -26,10 +26,14 @@ public class McInfConfig extends ConfigSetter implements ArenaConfig {
     @Extract private int maxRound;
 
     @Extract private float alphaPercent;
+    @Extract
+    private float hunterPercent;
     @Extract private int autoStart;
 
     @Extract private String humanDefault;
     @Extract private String zombieDefault;
+    @Extract
+    private String hunterKit;
 
     @Extract private long compassTime;
 
@@ -41,6 +45,15 @@ public class McInfConfig extends ConfigSetter implements ArenaConfig {
 
     @Extract private String[] gameCount;
     @Extract private String[] gameFinal;
+
+    @Extract
+    private String[] hunterActive;
+    @Extract
+    private String[] hunterBurn;
+    @Extract
+    private String[] hunterKill;
+    @Extract
+    private String[] hunterDeath;
 
     @Extract private String[] compassGain;
     @Extract private String[] infected;
@@ -77,10 +90,12 @@ public class McInfConfig extends ConfigSetter implements ArenaConfig {
         this.maxRound = config.getInt("game.max-round");
 
         this.alphaPercent = (float)config.getDouble("game.alpha-percent");
+        this.hunterPercent = (float) config.getDouble("game.hunter-percent");
         this.autoStart = config.getInt("game.auto-start");
 
         this.humanDefault = config.getString("default-kit.human");
         this.zombieDefault = config.getString("default-kit.zombie");
+        this.hunterKit = config.getString("default-kit.hunter");
 
         this.compassTime = config.getLong("compass-give-in-sec");
 
@@ -92,6 +107,11 @@ public class McInfConfig extends ConfigSetter implements ArenaConfig {
 
         this.gameCount = config.getString("Sounds.Game.Countdown").split(":");
         this.gameFinal = config.getString("Sounds.Game.Final").split(":");
+
+        this.hunterActive = config.getString("Sounds.Hunter.Active").split(":");
+        this.hunterBurn = config.getString("Sounds.Hunter.Burn").split(":");
+        this.hunterKill = config.getString("Sounds.Hunter.Kill").split(":");
+        this.hunterDeath = config.getString("Sounds.Hunter.Death").split(":");
 
         this.compassGain = config.getString("Sounds.Compass").split(":");
         this.infected = config.getString("Sounds.Infected").split(":");
