@@ -23,10 +23,11 @@ public class McInfPlayer implements TeamPlayer {
         player.setFoodLevel(20);
         player.setWalkSpeed(0.2f);
         player.setGlowing(false);
+        player.setLevel(0);
         Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> {
-            a.setBaseValue(20);
+            a.setBaseValue(100);
             player.setHealth(a.getBaseValue());
-            player.setHealthScale(a.getBaseValue());
+            player.setHealthScale(20);
         });
         this.gameTeam = gameTeam;
         this.status = status;
@@ -64,15 +65,15 @@ public class McInfPlayer implements TeamPlayer {
         this.gameTeam = gameTeam;
         if (gameTeam instanceof ZombieTeam){
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
-                a.setBaseValue(200);
-                player.setHealthScale(a.getBaseValue());
+                a.setBaseValue(2000);
+                player.setHealthScale(20);
                 player.setHealth(a.getBaseValue());
             });
             player.setWalkSpeed(0.25f);
         }else if (gameTeam instanceof HumanTeam){
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
-                a.setBaseValue(20);
-                player.setHealthScale(a.getBaseValue());
+                a.setBaseValue(100);
+                player.setHealthScale(20);
                 player.setHealth(a.getBaseValue());
             });
             player.setWalkSpeed(0.2f);
