@@ -170,6 +170,7 @@ public class McInfListener implements Listener {
                 if (using.equals(hunterKit)) {
                     api.getConfigManager().getData("hunterDeath", String[].class).ifPresent(s -> Bukkit.getOnlinePlayers().forEach(p -> utils.playSound(p, s)));
                     MinigamesCore.getApi().getPlayerManager().setSpectator(victim);
+                    VotingTask.updateHunterBossBar(MinigamesCore.getApi().getPlayerManager().getGamePlayer());
                     return;
                 }
             }

@@ -189,11 +189,13 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         vol.registerGameTask(preStartState, new InfectingTask());
         vol.registerGameTask(new InGameState("gaming", null), new GameTask());
         vol.registerGameTask(gameEndState, new GameEndTask());
+        // register skill
         skillManager.register("Speeder", new SpeederSkill());
         skillManager.register("Giant", new GiantSkill());
         skillManager.register("Leaper", new LeaperSkill());
         skillManager.register("Exploder", new ExploderSkill());
         skillManager.register("Blocker", new BlockerSkill());
+        skillManager.register("ChemWitch", new ChemWitchSkill());
         getServer().getPluginManager().registerEvents(new McInfListener(), this);
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new SkillListener(skillManager), this);

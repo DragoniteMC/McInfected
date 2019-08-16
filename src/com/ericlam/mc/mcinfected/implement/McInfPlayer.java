@@ -68,7 +68,7 @@ public class McInfPlayer implements TeamPlayer {
                 player.setHealthScale(a.getBaseValue());
                 player.setHealth(a.getBaseValue());
             });
-            player.setWalkSpeed(0.265f);
+            player.setWalkSpeed(0.25f);
         }else if (gameTeam instanceof HumanTeam){
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
                 a.setBaseValue(20);

@@ -194,7 +194,6 @@ Infected:
     Armor: []
     Inventory:
       Crackshot:
-        - ghostjump
         - ghostweapons
       Normal: []
     Display: '&e跳躍僵屍'
@@ -207,7 +206,6 @@ Infected:
     Armor: []
     Inventory:
       Crackshot:
-        - ghostblack
         - ghostweapons
       Normal: []
     Display: '&e迷霧幽靈'
@@ -238,7 +236,6 @@ Infected:
       - 化學毒巫.......在生化幽靈的勢力當中佔有極大的優勢。
     Inventory:
       Crackshot:
-        - ghostslow
         - ghostweapons
       Normal: []
     Disguise: WITCH
@@ -253,7 +250,6 @@ Infected:
     Armor: []
     Inventory:
       Crackshot:
-        - powder
         - ghostweapons
       Normal: []
     Icon: powder

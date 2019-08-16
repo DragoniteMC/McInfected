@@ -5,6 +5,7 @@ import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.main.McInfected;
 import com.ericlam.mc.mcinfected.tasks.GameTask;
+import com.ericlam.mc.mcinfected.tasks.VotingTask;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.event.player.CrackShotDeathEvent;
@@ -69,6 +70,7 @@ public class SkillListener implements Listener {
         }
         if (melee) {
             api.getConfigManager().getData("hunterKill", String[].class).ifPresent(s -> Bukkit.getOnlinePlayers().forEach(p -> utils.playSound(p, s)));
+            VotingTask.updateHunterBossBar(MinigamesCore.getApi().getPlayerManager().getGamePlayer());
         }
 
 
