@@ -155,7 +155,10 @@ public class McInfListener implements Listener {
         }
 
         if (victim.getTeam() instanceof ZombieTeam) {
-            if (victim.getStatus() == GamePlayer.Status.SPECTATING) return;
+            if (victim.getStatus() == GamePlayer.Status.SPECTATING) {
+                VotingTask.updateHunterBossBar(MinigamesCore.getApi().getPlayerManager().getGamePlayer());
+                return;
+            }
             McInfected.getApi().getConfigManager().getData("respawn", String[].class).ifPresent(s -> MinigamesCore.getApi().getGameUtils().playSound(player, s));
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> player.setHealth(a.getBaseValue()));
             List<Location> respawn = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("zombie");
