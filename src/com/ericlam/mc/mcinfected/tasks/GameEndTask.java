@@ -1,9 +1,12 @@
 package com.ericlam.mc.mcinfected.tasks;
 
+import com.ericlam.mc.mcinfected.implement.McInfGameStats;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
+import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.main.McInfected;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
+import com.ericlam.mc.minigames.core.exception.gamestats.PlayerNotExistException;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
 import org.bukkit.Bukkit;
@@ -44,12 +47,29 @@ public class GameEndTask extends InfTask {
             zombieWins++;
             VotingTask.bossBar.setColor(BarColor.RED);
             GameTask.alphasZombies.forEach(p -> MinigamesCore.getApi().getGameStatsManager().addWins(p, 1));
+            playerManager.getTotalPlayers().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam && !GameTask.alphasZombies.contains(g))
+                    .forEach(g -> {
+                        try {
+                            McInfGameStats stats = MinigamesCore.getApi().getGameStatsManager().getGameStats(g).castTo(McInfGameStats.class);
+                            stats.setLoses(stats.getLoses() + 1);
+                        } catch (PlayerNotExistException e) {
+                            McInfected.getProvidingPlugin(McInfected.class).getLogger().warning(e.getGamePlayer().getName() + " is not exist");
+                        }
+                    });
         } else {
             getHumans().forEach(p -> {
                 Player player = p.getPlayer();
                 player.setGlowing(true);
                 MinigamesCore.getApi().getFireWorkManager().spawnFireWork(player);
                 MinigamesCore.getApi().getGameStatsManager().addWins(p, 1);
+            });
+            GameTask.alphasZombies.forEach(p -> {
+                try {
+                    McInfGameStats stats = MinigamesCore.getApi().getGameStatsManager().getGameStats(p).castTo(McInfGameStats.class);
+                    stats.setLoses(stats.getLoses() + 1);
+                } catch (PlayerNotExistException e) {
+                    McInfected.getProvidingPlugin(McInfected.class).getLogger().warning(e.getGamePlayer().getName() + " is not exist");
+                }
             });
             humanWins++;
             VotingTask.bossBar.setColor(BarColor.GREEN);
