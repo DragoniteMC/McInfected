@@ -34,6 +34,15 @@ public class GameEndTask extends InfTask {
         MinigamesCore.getApi().getGameManager().endGame(gamePlayers, humanWins == zombieWins ? null : humanWins > zombieWins ? inf.getHumanTeam() : inf.getZombieTeam(), true);
     }
 
+    private static void addLose(GamePlayer g) {
+        try {
+            McInfGameStats stats = MinigamesCore.getApi().getGameStatsManager().getGameStats(g).castTo(McInfGameStats.class);
+            stats.setLoses(stats.getLoses() + 1);
+        } catch (PlayerNotExistException e) {
+            McInfected.getProvidingPlugin(McInfected.class).getLogger().warning(e.getGamePlayer().getName() + " is not exist");
+        }
+    }
+
     private List<GamePlayer> getHumans() {
         return playerManager.getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).collect(Collectors.toList());
     }
@@ -48,14 +57,7 @@ public class GameEndTask extends InfTask {
             VotingTask.bossBar.setColor(BarColor.RED);
             GameTask.alphasZombies.forEach(p -> MinigamesCore.getApi().getGameStatsManager().addWins(p, 1));
             playerManager.getTotalPlayers().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam && !GameTask.alphasZombies.contains(g))
-                    .forEach(g -> {
-                        try {
-                            McInfGameStats stats = MinigamesCore.getApi().getGameStatsManager().getGameStats(g).castTo(McInfGameStats.class);
-                            stats.setLoses(stats.getLoses() + 1);
-                        } catch (PlayerNotExistException e) {
-                            McInfected.getProvidingPlugin(McInfected.class).getLogger().warning(e.getGamePlayer().getName() + " is not exist");
-                        }
-                    });
+                    .forEach(GameEndTask::addLose);
         } else {
             getHumans().forEach(p -> {
                 Player player = p.getPlayer();
@@ -63,14 +65,7 @@ public class GameEndTask extends InfTask {
                 MinigamesCore.getApi().getFireWorkManager().spawnFireWork(player);
                 MinigamesCore.getApi().getGameStatsManager().addWins(p, 1);
             });
-            GameTask.alphasZombies.forEach(p -> {
-                try {
-                    McInfGameStats stats = MinigamesCore.getApi().getGameStatsManager().getGameStats(p).castTo(McInfGameStats.class);
-                    stats.setLoses(stats.getLoses() + 1);
-                } catch (PlayerNotExistException e) {
-                    McInfected.getProvidingPlugin(McInfected.class).getLogger().warning(e.getGamePlayer().getName() + " is not exist");
-                }
-            });
+            GameTask.alphasZombies.forEach(GameEndTask::addLose);
             humanWins++;
             VotingTask.bossBar.setColor(BarColor.GREEN);
             Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Game.Over.Survivors").replace("<humans>", getHumans().stream().map(e -> e.getPlayer().getDisplayName()).collect(Collectors.joining(", "))));
