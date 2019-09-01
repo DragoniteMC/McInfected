@@ -24,10 +24,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.annotation.Nullable;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -56,11 +53,9 @@ public class KitManager {
             List<String> potions = humanSection.getStringList(kit.concat(".Potions"));
             List<ItemStack> stacks = csItems.stream().map(s -> s.split(":")).map(arr -> {
                 ItemStack stack = csUtility.generateWeapon(arr[0]);
-                if (stack != null){
-                    CSPapi.updateItemStackFeaturesNonPlayer(arr[0], stack);
-                    if (arr.length > 1) {
-                        stack.setAmount(Integer.parseInt(arr[1]));
-                    }
+                stack = CSPapi.updateItemStackFeaturesNonPlayer(arr[0], stack);
+                if (stack != null && arr.length > 1) {
+                    stack.setAmount(Integer.parseInt(arr[1]));
                 }
                 return stack;
             }).filter(Objects::nonNull).collect(Collectors.toList());
@@ -74,7 +69,7 @@ public class KitManager {
                 return stack;
             }).filter(Objects::nonNull).collect(Collectors.toList()));
             ItemStack[] armors = armor.size() == 0 ? null : armor.stream().map(Material::getMaterial).map(s -> s == null ? Material.AIR : s).map(ItemStack::new).toArray(ItemStack[]::new);
-            ItemStack iconItem = CSPapi.updateItemStackFeaturesNonPlayer(icon, csUtility.generateWeapon(icon));
+            ItemStack iconItem = Optional.ofNullable(CSPapi.updateItemStackFeaturesNonPlayer(icon, csUtility.generateWeapon(icon))).orElseGet(() -> new ItemStack(Material.valueOf(icon)));
             List<PotionEffect> potionsEffect = potions.stream().map(s -> s.split(":")).filter(s -> s.length >= 3).map(s -> {
                 PotionEffectType type = PotionEffectType.getByName(s[0]);
                 if (type == null) return null;
@@ -101,6 +96,9 @@ public class KitManager {
     public void removeLastKit(Player target, boolean invClear) {
         if (invClear) target.getInventory().clear();
         target.getActivePotionEffects().forEach(e -> target.removePotionEffect(e.getType()));
+        target.setFireTicks(0);
+        target.setGlowing(false);
+        target.setFoodLevel(20);
         DisguiseAPI.undisguiseToAll(target);
         this.currentKit.remove(target);
     }

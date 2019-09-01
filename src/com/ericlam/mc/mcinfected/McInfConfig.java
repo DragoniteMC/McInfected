@@ -47,6 +47,9 @@ public class McInfConfig extends ConfigSetter implements ArenaConfig {
     @Extract private String[] gameFinal;
 
     @Extract
+    private double damageMultiplier;
+
+    @Extract
     private String[] hunterActive;
     @Extract
     private String[] hunterBurn;
@@ -92,6 +95,8 @@ public class McInfConfig extends ConfigSetter implements ArenaConfig {
         this.alphaPercent = (float)config.getDouble("game.alpha-percent");
         this.hunterPercent = (float) config.getDouble("game.hunter-percent");
         this.autoStart = config.getInt("game.auto-start");
+
+        this.damageMultiplier = config.getDouble("damage.multiplier");
 
         this.humanDefault = config.getString("default-kit.human");
         this.zombieDefault = config.getString("default-kit.zombie");

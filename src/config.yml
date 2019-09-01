@@ -14,6 +14,9 @@ default-kit:
   zombie: Speeder
   hunter: Hunter
 
+damage:
+  multiplier: 0.3
+
 fallback-server: inflobby
 
 compass-give-in-sec: 65

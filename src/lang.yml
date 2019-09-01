@@ -20,6 +20,7 @@ Game:
   Arena Selected: '&7即將前往 >&c<arena>&7'
   Infecting: '&5生化病毒即將散播...'
   Infected: '&e<player>&c成為了生化幽靈。'
+  Damage-Indicator: "&e傭兵攻擊力 +<value>%"
   Over:
     Humans Win: '&6&lSOLDIER  WIN'
     Infected Win: '&c&lGHOST  WIN'

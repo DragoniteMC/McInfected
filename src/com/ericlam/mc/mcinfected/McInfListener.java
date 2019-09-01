@@ -13,16 +13,20 @@ import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.event.player.CrackShotDeathEvent;
 import com.ericlam.mc.minigames.core.event.player.GamePlayerDeathEvent;
 import com.ericlam.mc.minigames.core.event.section.GamePreEndEvent;
+import com.ericlam.mc.minigames.core.event.state.InGameStateSwitchEvent;
 import com.ericlam.mc.minigames.core.exception.gamestats.PlayerNotExistException;
 import com.ericlam.mc.minigames.core.game.GameState;
 import com.ericlam.mc.minigames.core.game.GameTeam;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.GameUtils;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
+import com.hypernite.mc.hnmc.core.managers.ConfigManager;
 import com.hypernite.mc.hnmc.core.utils.Tools;
+import com.shampaggon.crackshot.events.WeaponDamageEntityEvent;
 import me.DeeCaaD.CrackShotPlus.API;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -45,6 +49,8 @@ import java.util.logging.Level;
 
 public class McInfListener implements Listener {
 
+    private double multiplier = 0.0;
+
     @EventHandler
     public void onDrop(PlayerDropItemEvent e) {
         e.setCancelled(true);
@@ -59,6 +65,12 @@ public class McInfListener implements Listener {
             default:
                 break;
         }
+    }
+
+    @EventHandler
+    public void onGameStateSwitch(InGameStateSwitchEvent e) {
+        if (e.getInGameState() != McInfected.getPlugin(McInfected.class).getGameEndState()) return;
+        this.multiplier = 0.0;
     }
 
     @EventHandler
@@ -107,6 +119,19 @@ public class McInfListener implements Listener {
         GameTeam team = e.getWinnerTeam();
         String path = "Game.Over.Result.".concat(team == null ? "Draw" : team instanceof HumanTeam ? "Human" : "Infected");
         Bukkit.getOnlinePlayers().forEach(p -> p.sendTitle(GameEndTask.getTeamScore(), McInfected.getApi().getConfigManager().getPureMessage(path), 0, 180, 20));
+    }
+
+    @EventHandler
+    public void onDamage(WeaponDamageEntityEvent e) {
+        if (!(e.getVictim() instanceof Player)) return;
+        Optional<GamePlayer> vic = MinigamesCore.getApi().getPlayerManager().findPlayer((Player) e.getVictim());
+        Optional<GamePlayer> att = MinigamesCore.getApi().getPlayerManager().findPlayer(e.getPlayer());
+        if (att.isEmpty() || vic.isEmpty()) return;
+        TeamPlayer attacker = att.get().castTo(TeamPlayer.class);
+        TeamPlayer victim = vic.get().castTo(TeamPlayer.class);
+        if (attacker.getTeam() instanceof ZombieTeam || victim.getTeam() instanceof HumanTeam) return;
+        final double originalDamage = e.getDamage();
+        e.setDamage(originalDamage * (1 + multiplier));
     }
 
     @EventHandler
@@ -162,7 +187,9 @@ public class McInfListener implements Listener {
             McInfected.getApi().getConfigManager().getData("respawn", String[].class).ifPresent(s -> MinigamesCore.getApi().getGameUtils().playSound(player, s));
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> player.setHealth(a.getBaseValue()));
             List<Location> respawn = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("zombie");
+            McInfected.getApi().removePreviousKit(player, true);
             player.teleportAsync(respawn.get(Tools.randomWithRange(0, respawn.size() - 1)));
+            McInfected.getApi().gainKit(victim.castTo(McInfPlayer.class));
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
         } else if (victim.getTeam() instanceof HumanTeam) {
             McInfectedAPI api = McInfected.getApi();
@@ -180,6 +207,13 @@ public class McInfListener implements Listener {
             victim.setTeam(McInfected.getPlugin(McInfected.class).getZombieTeam());
             McInfected.getApi().removePreviousKit(player, true);
             McInfected.getApi().gainKit(victim.castTo(McInfPlayer.class));
+            ConfigManager cf = McInfected.getApi().getConfigManager();
+            multiplier += cf.getData("damageMultiplier", Double.class).orElse(0.3);
+            String title = cf.getPureMessage("Game.Damage-Indicator").replace("<value>", multiplier + "");
+            MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).forEach(g -> {
+                g.getPlayer().sendTitle("", title, 0, 30, 20);
+                g.getPlayer().playSound(g.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+            });
         }
         VotingTask.updateHunterBossBar(MinigamesCore.getApi().getPlayerManager().getGamePlayer());
 

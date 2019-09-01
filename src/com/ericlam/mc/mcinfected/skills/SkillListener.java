@@ -48,9 +48,9 @@ public class SkillListener implements Listener {
                     e.getPlayer().sendTitle("", "§b已化身成幽靈獵手。", 0, 30, 0);
                     Player player = e.getPlayer();
                     Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> {
-                        a.setBaseValue(3000);
-                        player.setHealthScale(20);
+                        a.setBaseValue(2048);
                         player.setHealth(a.getBaseValue());
+                        player.setHealthScale(20);
                     });
                 }
             }
