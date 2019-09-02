@@ -1,5 +1,6 @@
 package com.ericlam.mc.mcinfected.tasks;
 
+import com.ericlam.mc.csweapon.CustomCSWeapon;
 import com.ericlam.mc.mcinfected.main.McInfected;
 import com.ericlam.mc.mcinfected.main.SoundUtils;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
@@ -15,8 +16,10 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.List;
 
 public class InfectingTask extends InfTask {
+
     @Override
     public void initRun(PlayerManager playerManager) {
+        CustomCSWeapon.getApi().getMolotovManager().resetFires();
         MinigamesCore.getApi().getGameManager().setState(GameState.PRESTART);
         playerManager.getTotalPlayers().forEach(playerManager::setGamePlayer);
         Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Game.Infecting"));

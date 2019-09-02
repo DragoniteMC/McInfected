@@ -63,6 +63,7 @@ public class McInfPlayer implements TeamPlayer {
     @Override
     public void setTeam(GameTeam gameTeam) {
         this.gameTeam = gameTeam;
+        player.setInvulnerable(true);
         if (gameTeam instanceof ZombieTeam){
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
                 a.setBaseValue(2000);
@@ -78,6 +79,7 @@ public class McInfPlayer implements TeamPlayer {
             });
             player.setWalkSpeed(0.2f);
         }
+        player.setInvulnerable(false);
         VotingTask.switchTeam(this);
     }
 

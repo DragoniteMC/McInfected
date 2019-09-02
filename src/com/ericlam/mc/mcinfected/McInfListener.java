@@ -12,6 +12,7 @@ import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.event.player.CrackShotDeathEvent;
 import com.ericlam.mc.minigames.core.event.player.GamePlayerDeathEvent;
+import com.ericlam.mc.minigames.core.event.player.GamePlayerJoinEvent;
 import com.ericlam.mc.minigames.core.event.section.GamePreEndEvent;
 import com.ericlam.mc.minigames.core.event.state.InGameStateSwitchEvent;
 import com.ericlam.mc.minigames.core.exception.gamestats.PlayerNotExistException;
@@ -38,7 +39,6 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -84,9 +84,11 @@ public class McInfListener implements Listener {
             e.setCancelled(true);
     }
 
+
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        GameState state = MinigamesCore.getApi().getGameManager().getGameState();
+    public void onPlayerJoin(GamePlayerJoinEvent e) {
+        GamePlayer player = e.getGamePlayer();
+        GameState state = e.getGameState();
         PlayerManager playerManager = MinigamesCore.getApi().getPlayerManager();
         switch (state) {
             case PRESTART:
@@ -95,16 +97,22 @@ public class McInfListener implements Listener {
             default:
                 return;
         }
-
-        GamePlayer player = playerManager.buildGamePlayer(e.getPlayer());
+        MinigamesCore.getApi().getGameStatsManager().loadGameStats(player);
+        VotingTask.addPlayer(player);
+        Location loc = null;
         switch (state) {
             case PRESTART:
                 playerManager.setGamePlayer(player);
+                player.castTo(TeamPlayer.class).setTeam(McInfected.getPlugin(McInfected.class).getHumanTeam());
+                List<Location> locs = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("human");
+                loc = locs.get(Tools.randomWithRange(0, locs.size()));
                 break;
             case IN_GAME:
                 playerManager.setSpectator(player);
+                loc = playerManager.getGamePlayer().get(Tools.randomWithRange(0, playerManager.getGamePlayer().size())).getPlayer().getLocation();
                 break;
         }
+        if (loc != null) player.getPlayer().teleportAsync(loc);
     }
 
 
@@ -209,7 +217,7 @@ public class McInfListener implements Listener {
             McInfected.getApi().gainKit(victim.castTo(McInfPlayer.class));
             ConfigManager cf = McInfected.getApi().getConfigManager();
             multiplier += cf.getData("damageMultiplier", Double.class).orElse(0.3);
-            String title = cf.getPureMessage("Game.Damage-Indicator").replace("<value>", multiplier + "");
+            String title = cf.getPureMessage("Game.Damage-Indicator").replace("<value>", (multiplier * 100) + "");
             MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).forEach(g -> {
                 g.getPlayer().sendTitle("", title, 0, 30, 20);
                 g.getPlayer().playSound(g.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);

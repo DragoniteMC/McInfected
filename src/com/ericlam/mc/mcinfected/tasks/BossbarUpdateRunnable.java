@@ -21,7 +21,7 @@ public class BossbarUpdateRunnable extends BukkitRunnable {
     public void run() {
         String tit = McInfected.getApi().getConfigManager().getPureMessage("Picture.Bar.Hunter");
         bossBar.setTitle(tit.replace("<h>", humans + "").replace("<z>", zombies + ""));
-        double progress = humans == 0 ? 1.0 : zombies == 0 ? 0.0 : (double) humans / zombies;
+        double progress = humans == 0 ? 1.0 : zombies == 0 ? 0.0 : (double) Math.min(humans, zombies) / Math.max(humans, zombies);
         bossBar.setProgress(progress);
         bossBar.setColor(BarColor.WHITE);
     }

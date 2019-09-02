@@ -7,6 +7,7 @@ import com.ericlam.mc.mcinfected.main.SoundUtils;
 import com.ericlam.mc.minigames.core.arena.Arena;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
+import com.ericlam.mc.minigames.core.factory.compass.CompassTracker;
 import com.ericlam.mc.minigames.core.factory.scoreboard.GameBoard;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
@@ -26,6 +27,7 @@ public class VotingTask extends InfTask {
     private boolean loaded = false;
     static BossBar bossBar;
     static BossBar hunterBossBar;
+    static CompassTracker tracker;
     private static GameBoard gameBoard;
     private Arena arena;
 
@@ -78,6 +80,7 @@ public class VotingTask extends InfTask {
     @Override
     public void onFinish() {
         ConfigManager cf = McInfected.getApi().getConfigManager();
+        McInfected mcinf = McInfected.getPlugin(McInfected.class);
         bossBar = Bukkit.createBossBar(cf.getPureMessage("Picture.Bar.Title").replace("<z>", "0").replace("<h>", "0"), BarColor.PURPLE, BarStyle.SOLID);
         hunterBossBar = Bukkit.createBossBar(cf.getPureMessage("Picture.Bar.Hunter"), BarColor.WHITE, BarStyle.SOLID);
         hunterBossBar.setProgress(0.5);
@@ -94,6 +97,14 @@ public class VotingTask extends InfTask {
                 .addLine("§2", 7)
                 .addTeamSetting(McInfected.getApi().getHumanTeam(), Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
                 .build();
+        tracker = MinigamesCore.getProperties().getGameFactory()
+                .getCompassFactory()
+                .setTrackerRange(200)
+                .setCaughtText("&e捕捉傭兵: &a<target> &7| &e範圍: &a<distance>")
+                .setSearchingText("&e搜索中...", "&a搜索中...", "&c搜索中...", "&b搜索中...")
+                .setTeamTarget(mcinf.getZombieTeam(), mcinf.getHumanTeam())
+                .build();
+        tracker.launch();
     }
 
     @Override
