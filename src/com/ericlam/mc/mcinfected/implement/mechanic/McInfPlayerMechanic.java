@@ -33,6 +33,6 @@ public class McInfPlayerMechanic implements GamePlayerHandler {
 
     @Override
     public int requireStart() {
-        return 2;
+        return McInfected.getApi().getConfigManager().getData("autoStart", Integer.class).orElse(2);
     }
 }
