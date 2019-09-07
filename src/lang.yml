@@ -14,6 +14,7 @@ Error:
     Not Enough Players: '&c這裡的人數不足以繼續進行遊戲'
     Not An Infected: '&c只有&4生化幽靈&c才可以自殺'
 Game:
+  Kit-Chose: "&e在未感染狀態時，輸入&a/zombie&e |&a /human &e來切換職業。"
   Start: "&a倒數開始，請選擇遊戲地圖！"
   Start-Title: "&4&lMcInfected"
   KillStreak: "玩家&6<player>&7達到了&x<killstreak>&7&l KILL！"

@@ -135,20 +135,21 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
             if (zombieInv.containsKey(player)) return zombieInv.get(player);
             kits = kitManager.getKitMap().entrySet().stream().filter(e -> e.getValue().getDisguise() != EntityType.PLAYER).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         }
-        McInfPlayer infPlayer = player.castTo(McInfPlayer.class);
-        int row = (int) Math.ceil(kits.size() / 9);
+        int row = (int) Math.ceil((double) kits.size() / 9);
         InventoryBuilder builder = new InventoryBuilder(row == 0 ? 1 : row, "&9選擇職業");
         kits.forEach((k, v) -> {
             if (k.equals(configManager.getData("hunterKit", String.class).orElse(""))) return;
-            v.getDescription().add(0, configManager.getPureMessage("Command.Kit.Choose").replace("<kit>", v.getDisplayName()));
-            v.getDescription().add(1, " ");
             ItemStack stack = new ItemStackBuilder(v.getIcon()).displayName(v.getDisplayName()).lore(v.getDescription()).build();
             this.clickMap.put(stack, e -> {
                 e.setCancelled(true);
                 Player clicked = (Player) e.getWhoClicked();
-                if (human) infPlayer.setHumanKit(k);
-                else infPlayer.setZombieKit(k);
-                clicked.sendMessage(configManager.getMessage("Command.Kit.Chosen").replace("<team>", human ? "人類" : "生化幽靈").replace("<kit>", v.getDisplayName()));
+                MinigamesCore.getApi().getPlayerManager().findPlayer(clicked).ifPresent(player1 -> {
+                    McInfPlayer infPlayer = player1.castTo(McInfPlayer.class);
+                    if (human) infPlayer.setHumanKit(k);
+                    else infPlayer.setZombieKit(k);
+                    clicked.sendMessage(configManager.getMessage("Command.Kit.Chosen").replace("<team>", human ? "人類" : "生化幽靈").replace("<kit>", v.getDisplayName()));
+                });
+
             });
             builder.item(stack);
         });
@@ -166,6 +167,10 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         configManager = HyperNiteMC.getAPI().registerConfig(config);
         configManager.setMsgConfig("lang.yml");
         kitManager = new KitManager(configManager.getConfig("kits.yml"));
+        kitManager.getKitMap().values().forEach(v -> {
+            v.getDescription().add(0, configManager.getPureMessage("Command.Kit.Choose").replace("<kit>", v.getDisplayName()));
+            v.getDescription().add(1, " ");
+        });
         Compulsory com = MinigamesCore.getRegistration().getCompulsory();
         com.registerVoteGUI(new InventoryBuilder(1, "&c地圖投票"), 0, 2, 4, 6, 8);
         com.registerArenaMechanic(new McInfArenaMechanic());

@@ -7,7 +7,6 @@ import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.game.GameState;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
-import com.hypernite.mc.hnmc.core.utils.Tools;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.potion.PotionEffect;
@@ -23,14 +22,15 @@ public class InfectingTask extends InfTask {
         MinigamesCore.getApi().getGameManager().setState(GameState.PRESTART);
         playerManager.getTotalPlayers().forEach(playerManager::setGamePlayer);
         Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Game.Infecting"));
+        Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Game.Kit-Chose"));
         List<Location> locations = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("human");
         playerManager.getGamePlayer().forEach(p -> {
             p.castTo(TeamPlayer.class).setTeam(mcinf.getHumanTeam());
             VotingTask.bossBar.addPlayer(p.getPlayer());
             VotingTask.hunterBossBar.addPlayer(p.getPlayer());
-            p.getPlayer().teleportAsync(locations.get(Tools.randomWithRange(0, locations.size() - 1)));
             p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
         });
+        MinigamesCore.getApi().getGameUtils().noLagTeleport(playerManager.getGamePlayer(), locations, 2L);
     }
 
     @Override

@@ -34,6 +34,8 @@ public class VotingTask extends InfTask {
     public static void addPlayer(GamePlayer player) {
         if (gameBoard == null) return;
         gameBoard.addPlayer(player);
+        bossBar.addPlayer(player.getPlayer());
+        hunterBossBar.addPlayer(player.getPlayer());
     }
 
     public static void switchTeam(TeamPlayer player) {
@@ -118,6 +120,7 @@ public class VotingTask extends InfTask {
             MinigamesCore.getApi().getLobbyManager().runFinalResult();
             loaded = true;
             arena = MinigamesCore.getApi().getArenaManager().getFinalArena();
+            MinigamesCore.getApi().getGameUtils().unLagIterate(arena.getWarp("human"), loc -> loc.getChunk().load(true), 10L);
             Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Game.Arena Selected").replace("<arena>", arena.getDisplayName()));
             Bukkit.broadcastMessage(McInfected.getApi().getConfigManager().getMessage("Game.Time.PreGame"));
         }

@@ -43,6 +43,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -56,7 +57,7 @@ public class McInfListener implements Listener {
         e.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onClick(InventoryClickEvent e) {
         switch (e.getAction()) {
             case DROP_ALL_CURSOR:
@@ -105,7 +106,7 @@ public class McInfListener implements Listener {
                 playerManager.setGamePlayer(player);
                 player.castTo(TeamPlayer.class).setTeam(McInfected.getPlugin(McInfected.class).getHumanTeam());
                 List<Location> locs = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("human");
-                loc = locs.get(Tools.randomWithRange(0, locs.size()));
+                loc = locs.get(Tools.randomWithRange(0, locs.size() - 1));
                 break;
             case IN_GAME:
                 playerManager.setSpectator(player);
@@ -138,6 +139,9 @@ public class McInfListener implements Listener {
         TeamPlayer attacker = att.get().castTo(TeamPlayer.class);
         TeamPlayer victim = vic.get().castTo(TeamPlayer.class);
         if (attacker.getTeam() instanceof ZombieTeam || victim.getTeam() instanceof HumanTeam) return;
+        String using = McInfected.getApi().currentKit(e.getPlayer());
+        String hunterKit = McInfected.getApi().getConfigManager().getData("hunterKit", String.class).orElse("");
+        if (using != null && using.equals(hunterKit)) return;
         final double originalDamage = e.getDamage();
         e.setDamage(originalDamage * (1 + multiplier));
     }
@@ -217,7 +221,8 @@ public class McInfListener implements Listener {
             McInfected.getApi().gainKit(victim.castTo(McInfPlayer.class));
             ConfigManager cf = McInfected.getApi().getConfigManager();
             multiplier += cf.getData("damageMultiplier", Double.class).orElse(0.3);
-            String title = cf.getPureMessage("Game.Damage-Indicator").replace("<value>", (multiplier * 100) + "");
+            String showMulti = new DecimalFormat("##.##").format(multiplier * 100);
+            String title = cf.getPureMessage("Game.Damage-Indicator").replace("<value>", showMulti + "");
             MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).forEach(g -> {
                 g.getPlayer().sendTitle("", title, 0, 30, 20);
                 g.getPlayer().playSound(g.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);

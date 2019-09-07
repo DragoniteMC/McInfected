@@ -33,8 +33,8 @@ public class GameTask extends InfTask {
         int alphas = Math.round(playerManager.getGamePlayer().size() * percent);
         Random random = new Random();
         alphasZombies.clear();
+        LinkedList<GamePlayer> list = new LinkedList<>(playerManager.getGamePlayer());
         while (alphasZombies.size() < alphas) {
-            LinkedList<GamePlayer> list = new LinkedList<>(playerManager.getGamePlayer());
             int i = random.nextInt(list.size());
             TeamPlayer player = list.remove(i).castTo(TeamPlayer.class);
             player.setTeam(mcinf.getZombieTeam());
