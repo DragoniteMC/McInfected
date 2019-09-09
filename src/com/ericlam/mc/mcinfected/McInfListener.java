@@ -63,6 +63,7 @@ public class McInfListener implements Listener {
             case DROP_ALL_CURSOR:
             case DROP_ONE_CURSOR:
                 e.setCancelled(true);
+                return;
             default:
                 break;
         }

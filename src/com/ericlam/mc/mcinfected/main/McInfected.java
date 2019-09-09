@@ -18,6 +18,7 @@ import com.ericlam.mc.mcinfected.skills.SkillManager;
 import com.ericlam.mc.mcinfected.skills.impl.*;
 import com.ericlam.mc.mcinfected.tasks.*;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
+import com.ericlam.mc.minigames.core.event.section.GameVotingEvent;
 import com.ericlam.mc.minigames.core.game.GameState;
 import com.ericlam.mc.minigames.core.game.InGameState;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
@@ -203,13 +204,17 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         skillManager.register("ChemWitch", new ChemWitchSkill());
         getServer().getPluginManager().registerEvents(new McInfListener(), this);
         getServer().getPluginManager().registerEvents(this, this);
-        getServer().getPluginManager().registerEvents(new SkillListener(skillManager), this);
     }
 
 
     @Override
     public void onDisable() {
         super.onDisable();
+    }
+
+    @EventHandler
+    public void onGameVoting(GameVotingEvent e) {
+        getServer().getPluginManager().registerEvents(new SkillListener(skillManager), this);
     }
 
     @EventHandler

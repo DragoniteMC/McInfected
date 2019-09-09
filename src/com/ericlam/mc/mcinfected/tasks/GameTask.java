@@ -95,6 +95,7 @@ public class GameTask extends InfTask {
             VotingTask.updateHunterBossBar(playerManager.getGamePlayer());
             playerManager.getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).forEach(g -> {
                 Player player = g.getPlayer();
+                player.setGlowing(true);
                 McInfected.getApi().getConfigManager().getData("hunterActive", String[].class).ifPresent(s -> MinigamesCore.getApi().getGameUtils().playSound(player, s));
                 player.sendTitle("", "§a按 F 可以化身成幽靈獵手。", 0, 100, 0);
             });
