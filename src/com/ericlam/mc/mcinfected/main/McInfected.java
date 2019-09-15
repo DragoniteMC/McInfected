@@ -1,10 +1,13 @@
 package com.ericlam.mc.mcinfected.main;
 
 import com.ericlam.mc.mcinfected.Kit;
-import com.ericlam.mc.mcinfected.McInfConfig;
 import com.ericlam.mc.mcinfected.McInfListener;
 import com.ericlam.mc.mcinfected.api.McInfectedAPI;
 import com.ericlam.mc.mcinfected.commands.InfArenaCommand;
+import com.ericlam.mc.mcinfected.config.InfConfig;
+import com.ericlam.mc.mcinfected.config.KitConfig;
+import com.ericlam.mc.mcinfected.config.LangConfig;
+import com.ericlam.mc.mcinfected.implement.ArenaConfigImpl;
 import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.implement.mechanic.McInfArenaMechanic;
 import com.ericlam.mc.mcinfected.implement.mechanic.McInfGameStatsMechanic;
@@ -26,9 +29,8 @@ import com.ericlam.mc.minigames.core.registable.Compulsory;
 import com.ericlam.mc.minigames.core.registable.Voluntary;
 import com.hypernite.mc.hnmc.core.builders.InventoryBuilder;
 import com.hypernite.mc.hnmc.core.builders.ItemStackBuilder;
-import com.hypernite.mc.hnmc.core.listener.ItemEventAction;
 import com.hypernite.mc.hnmc.core.main.HyperNiteMC;
-import com.hypernite.mc.hnmc.core.managers.ConfigManager;
+import com.hypernite.mc.hnmc.core.managers.YamlManager;
 import fr.mrsheepsheep.tinthealth.THAPI;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -45,18 +47,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public final class McInfected extends JavaPlugin implements Listener, McInfectedAPI {
 
     private static McInfectedAPI api;
-    private final Map<ItemStack, ItemEventAction<InventoryClickEvent>> clickMap = new ConcurrentHashMap<>();
+    private final Map<ItemStack, Consumer<InventoryClickEvent>> clickMap = new ConcurrentHashMap<>();
     private final Map<GamePlayer, Inventory> zombieInv = new ConcurrentHashMap<>();
     private HumanTeam humanTeam = new HumanTeam();
     private ZombieTeam zombieTeam = new ZombieTeam();
     private InGameState preStartState = new InGameState("preStart", null);
     private final Map<GamePlayer, Inventory> humanInv = new ConcurrentHashMap<>();
-    private ConfigManager configManager;
+    private YamlManager configManager;
     private KitManager kitManager;
     private SkillManager skillManager = new SkillManager();
     private InGameState gameEndState = new InGameState("gameEnd", null);
@@ -102,7 +105,7 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     }
 
     @Override
-    public ConfigManager getConfigManager() {
+    public YamlManager getConfigManager() {
         return configManager;
     }
 
@@ -139,7 +142,7 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         int row = (int) Math.ceil((double) kits.size() / 9);
         InventoryBuilder builder = new InventoryBuilder(row == 0 ? 1 : row, "&9選擇職業");
         kits.forEach((k, v) -> {
-            if (k.equals(configManager.getData("hunterKit", String.class).orElse(""))) return;
+            if (k.equals(configManager.getConfigAs(InfConfig.class).defaultKit.get("hunter"))) return;
             ItemStack stack = new ItemStackBuilder(v.getIcon()).displayName(v.getDisplayName()).lore(v.getDescription()).build();
             this.clickMap.put(stack, e -> {
                 e.setCancelled(true);
@@ -164,10 +167,12 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     public void onEnable() {
         api = this;
         tintEnabled = getServer().getPluginManager().getPlugin("TintHealth") != null;
-        McInfConfig config = new McInfConfig(this);
-        configManager = HyperNiteMC.getAPI().registerConfig(config);
-        configManager.setMsgConfig("lang.yml");
-        kitManager = new KitManager(configManager.getConfig("kits.yml"));
+        configManager = HyperNiteMC.getAPI().getFactory().getConfigFactory(this)
+                .register("config.yml", InfConfig.class)
+                .register("kits.yml", KitConfig.class)
+                .register("lang.yml", LangConfig.class)
+                .dump();
+        kitManager = new KitManager(configManager.getFileConfig(KitConfig.class));
         kitManager.getKitMap().values().forEach(v -> {
             v.getDescription().add(0, configManager.getPureMessage("Command.Kit.Choose").replace("<kit>", v.getDisplayName()));
             v.getDescription().add(1, " ");
@@ -177,7 +182,8 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         com.registerArenaMechanic(new McInfArenaMechanic());
         com.registerGamePlayerHandler(new McInfPlayerMechanic());
         com.registerGameStatsHandler(new McInfGameStatsMechanic());
-        com.registerArenaConfig(config);
+        InfConfig infConfig = configManager.getConfigAs(InfConfig.class);
+        com.registerArenaConfig(new ArenaConfigImpl(this, configManager.getConfigAs(LangConfig.class), infConfig));
         com.registerLobbyTask(new VotingTask());
         com.registerEndTask(new PreEndTask());
         com.registerArenaCommand(new InfArenaCommand(), this);
@@ -202,30 +208,31 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         skillManager.register("Exploder", new ExploderSkill());
         skillManager.register("Blocker", new BlockerSkill());
         skillManager.register("ChemWitch", new ChemWitchSkill());
-        getServer().getPluginManager().registerEvents(new McInfListener(), this);
+        getServer().getPluginManager().registerEvents(new McInfListener(infConfig), this);
         getServer().getPluginManager().registerEvents(this, this);
     }
 
 
     @Override
     public void onDisable() {
-        super.onDisable();
+        if (GameTask.airdrop != null) GameTask.airdrop.remove(); //防止突然關服忘了清理空投
     }
 
     @EventHandler
     public void onGameVoting(GameVotingEvent e) {
-        getServer().getPluginManager().registerEvents(new SkillListener(skillManager), this);
+        getServer().getPluginManager().registerEvents(new SkillListener(skillManager, configManager.getConfigAs(InfConfig.class)), this);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if (e.getCurrentItem() == null) return;
-        Optional.ofNullable(clickMap.get(e.getCurrentItem())).ifPresent(ex -> ex.onEvent(e));
+        Optional.ofNullable(clickMap.get(e.getCurrentItem())).ifPresent(ex -> ex.accept(e));
     }
 
     @EventHandler
     public void onCommandPreProcess(PlayerCommandPreprocessEvent e) {
-        if (MinigamesCore.getApi().getGameManager().getGameState() != GameState.PRESTART) return;
+        GameState state = MinigamesCore.getApi().getGameManager().getGameState();
+        if (state != GameState.PRESTART) return;
         Optional<GamePlayer> gamePlayerOptional = MinigamesCore.getApi().getPlayerManager().findPlayer(e.getPlayer());
         if (gamePlayerOptional.isEmpty()) return;
         GamePlayer gamePlayer = gamePlayerOptional.get();

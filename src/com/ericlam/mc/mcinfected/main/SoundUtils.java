@@ -1,7 +1,7 @@
 package com.ericlam.mc.mcinfected.main;
 
+import com.ericlam.mc.mcinfected.config.InfConfig;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
-import com.hypernite.mc.hnmc.core.managers.ConfigManager;
 import org.bukkit.Bukkit;
 
 import javax.annotation.Nullable;
@@ -9,20 +9,20 @@ import javax.annotation.Nullable;
 public class SoundUtils {
 
     public static void playVoteSound(boolean final_) {
-        ConfigManager cf = McInfected.getApi().getConfigManager();
-        String[] voteCount = cf.getData("vote".concat(final_ ? "Final" : "Count"), String[].class).orElse(null);
+        InfConfig cf = McInfected.getApi().getConfigManager().getConfigAs(InfConfig.class);
+        String[] voteCount = cf.soundVote.get(final_ ? "Final" : "Countdown").split(":");
         play(voteCount);
     }
 
     public static void playGameSound(boolean final_) {
-        ConfigManager cf = McInfected.getApi().getConfigManager();
-        String[] gameCount = cf.getData("game".concat(final_ ? "Final" : "Count"), String[].class).orElse(null);
+        InfConfig cf = McInfected.getApi().getConfigManager().getConfigAs(InfConfig.class);
+        String[] gameCount = cf.soundGame.get(final_ ? "Final" : "Countdown").split(":");
         play(gameCount);
     }
 
     public static void playInfectSound(boolean final_) {
-        ConfigManager cf = McInfected.getApi().getConfigManager();
-        String[] infectCount = cf.getData("infect".concat(final_ ? "Final" : "Count"), String[].class).orElse(null);
+        InfConfig cf = McInfected.getApi().getConfigManager().getConfigAs(InfConfig.class);
+        String[] infectCount = cf.soundInfect.get(final_ ? "Final" : "Countdown").split(":");
         play(infectCount);
     }
 

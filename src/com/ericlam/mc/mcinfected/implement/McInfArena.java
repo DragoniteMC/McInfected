@@ -1,7 +1,6 @@
 package com.ericlam.mc.mcinfected.implement;
 
 import com.ericlam.mc.minigames.core.arena.CreateArena;
-import net.milkbowl.vault.chat.Chat;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -73,7 +72,8 @@ public class McInfArena implements CreateArena {
     public boolean isSetupCompleted() {
         boolean human = Optional.ofNullable(warp.get("human")).map(w->w.size() > 1).orElse(false);
         boolean zombie = Optional.ofNullable(warp.get("zombie")).map(w->w.size() > 1).orElse(false);
-        return human && zombie;
+        boolean airdrop = Optional.ofNullable(warp.get("airdrop")).map(w -> w.size() > 1).orElse(false);
+        return human && zombie && airdrop;
     }
 
     @Override

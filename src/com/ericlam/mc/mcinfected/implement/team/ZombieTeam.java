@@ -6,7 +6,7 @@ import org.bukkit.ChatColor;
 public class ZombieTeam implements GameTeam {
     @Override
     public String getTeamName() {
-        return "Zombie";
+        return "殭屍";
     }
 
     @Override

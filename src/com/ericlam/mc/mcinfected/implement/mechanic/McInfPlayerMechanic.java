@@ -1,5 +1,6 @@
 package com.ericlam.mc.mcinfected.implement.mechanic;
 
+import com.ericlam.mc.mcinfected.config.InfConfig;
 import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.main.McInfected;
 import com.ericlam.mc.mcinfected.tasks.VotingTask;
@@ -33,6 +34,6 @@ public class McInfPlayerMechanic implements GamePlayerHandler {
 
     @Override
     public int requireStart() {
-        return McInfected.getApi().getConfigManager().getData("autoStart", Integer.class).orElse(2);
+        return McInfected.getApi().getConfigManager().getConfigAs(InfConfig.class).autoStart;
     }
 }

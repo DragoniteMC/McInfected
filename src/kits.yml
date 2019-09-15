@@ -225,7 +225,6 @@ Infected:
       Normal: []
     Armor: []
     Disguise: SKELETON
-    KillStreaks: {}
     Icon: ghostarrow
   ChemWitch:
     Display: '&e化學毒巫'

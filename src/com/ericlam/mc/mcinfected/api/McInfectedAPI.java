@@ -5,7 +5,7 @@ import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.skills.InfectedSkill;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
-import com.hypernite.mc.hnmc.core.managers.ConfigManager;
+import com.hypernite.mc.hnmc.core.managers.YamlManager;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -21,7 +21,7 @@ public interface McInfectedAPI {
 
     ZombieTeam getZombieTeam();
 
-    ConfigManager getConfigManager();
+    YamlManager getConfigManager();
 
     void gainKit(McInfPlayer player);
 

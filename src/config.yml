@@ -5,7 +5,7 @@ time:
 
 game:
   alpha-percent: 0.25
-  hunter-percent: 0.2
+  hunter-percent: 0.188
   auto-start: 2
   max-round: 8
 

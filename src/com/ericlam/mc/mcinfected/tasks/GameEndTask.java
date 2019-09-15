@@ -81,9 +81,9 @@ public class GameEndTask extends InfTask {
 
     @Override
     public void onFinish() {
-        int maxRound = McInfected.getApi().getConfigManager().getData("maxRound", Integer.class).orElse(5);
+        int maxRound = infConfig.maxRound;
         getHumans().forEach(p -> p.getPlayer().setGlowing(false));
-        int matchPoint = (int) Math.ceil(maxRound / 2);
+        int matchPoint = (int) Math.ceil((double) maxRound / 2);
         if (matchPoint % 2 == 0) matchPoint++;
         String mpTitle = McInfected.getApi().getConfigManager().getPureMessage("Picture.Bar.Mp");
         if (zombieWins == matchPoint - 1 || humanWins == matchPoint - 1) {

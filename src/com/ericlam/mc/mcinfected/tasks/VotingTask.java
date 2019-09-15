@@ -11,7 +11,7 @@ import com.ericlam.mc.minigames.core.factory.compass.CompassTracker;
 import com.ericlam.mc.minigames.core.factory.scoreboard.GameBoard;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
-import com.hypernite.mc.hnmc.core.managers.ConfigManager;
+import com.hypernite.mc.hnmc.core.managers.YamlManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
@@ -81,7 +81,7 @@ public class VotingTask extends InfTask {
 
     @Override
     public void onFinish() {
-        ConfigManager cf = McInfected.getApi().getConfigManager();
+        YamlManager cf = McInfected.getApi().getConfigManager();
         McInfected mcinf = McInfected.getPlugin(McInfected.class);
         bossBar = Bukkit.createBossBar(cf.getPureMessage("Picture.Bar.Title").replace("<z>", "0").replace("<h>", "0"), BarColor.PURPLE, BarStyle.SOLID);
         hunterBossBar = Bukkit.createBossBar(cf.getPureMessage("Picture.Bar.Hunter"), BarColor.WHITE, BarStyle.SOLID);
@@ -131,11 +131,11 @@ public class VotingTask extends InfTask {
 
     @Override
     public long getTotalTime() {
-        return McInfected.getApi().getConfigManager().getData("votingTime", Long.class).orElse(30L);
+        return infConfig.votingTime;
     }
 
     @Override
     public boolean shouldCancel() {
-        return playerManager.getWaitingPlayer().size() < McInfected.getApi().getConfigManager().getData("autoStart", Integer.class).orElse(2) && !loaded;
+        return playerManager.getWaitingPlayer().size() < infConfig.autoStart && !loaded;
     }
 }

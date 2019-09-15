@@ -1,5 +1,6 @@
 package com.ericlam.mc.mcinfected.implement;
 
+import com.ericlam.mc.mcinfected.config.InfConfig;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.main.McInfected;
@@ -31,8 +32,9 @@ public class McInfPlayer implements TeamPlayer {
         });
         this.gameTeam = gameTeam;
         this.status = status;
-        this.humanKit = McInfected.getApi().getConfigManager().getData("humanDefault", String.class).orElse("");
-        this.zombieKit = McInfected.getApi().getConfigManager().getData("zombieDefault", String.class).orElse("");
+        InfConfig infConfig = McInfected.getApi().getConfigManager().getConfigAs(InfConfig.class);
+        this.humanKit = infConfig.defaultKit.get("human");
+        this.zombieKit = infConfig.defaultKit.get("zombie");
     }
 
     public McInfPlayer(Player player){

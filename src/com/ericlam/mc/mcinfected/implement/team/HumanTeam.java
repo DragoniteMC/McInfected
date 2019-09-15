@@ -7,7 +7,7 @@ public class HumanTeam implements GameTeam {
 
     @Override
     public String getTeamName() {
-        return "Human";
+        return "傭兵";
     }
 
     @Override
