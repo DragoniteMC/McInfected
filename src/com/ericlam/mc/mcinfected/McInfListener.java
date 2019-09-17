@@ -78,12 +78,12 @@ public class McInfListener implements Listener {
     public McInfListener(InfConfig infConfig) {
         this.infConfig = infConfig;
         //Air drop content
-        airdropHandlers.add(infPlayer -> {
+        airdropHandlers.add(p -> MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).map(g -> g.castTo(McInfPlayer.class)).forEach(infPlayer -> {
             String kit = infPlayer.getHumanKit();
             Player player = infPlayer.getPlayer();
             McInfected.getApi().gainKit(player, kit);
             player.sendTitle("", "§a彈藥已補完", 0, 60, 20);
-        });
+        }));
 
         airdropHandlers.add(infPlayer -> {
             Player player = infPlayer.getPlayer();
@@ -95,23 +95,6 @@ public class McInfListener implements Listener {
             player.sendTitle("", "§a獲得: 防化服", 0, 60, 20);
         });
 
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onWeaponEntityDamage(WeaponDamageEntityEvent e) {
-        if (!(e.getVictim() instanceof Player)) return;
-        MinigamesCore.getApi().getPlayerManager().findPlayer((Player) e.getVictim()).ifPresent(g -> {
-            if (!(g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam)) return;
-            boolean antiVirusSuit = g.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() == 200.0;
-            double health = g.getPlayer().getHealth() - e.getDamage();
-            boolean oneChance = health < 100 && health > 0;
-            if (antiVirusSuit && oneChance) {
-                g.getPlayer().sendTitle("", "§c你的防化服已失效", 0, 40, 20);
-                g.getPlayer().playSound(g.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1, 1);
-                e.getPlayer().sendTitle("", "§4§l☣ §4感染失敗", 0, 40, 20);
-                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_ANVIL_DESTROY, 1, 1);
-            }
-        });
     }
 
     @EventHandler
@@ -184,8 +167,8 @@ public class McInfListener implements Listener {
         MinigamesCore.getApi().getPlayerManager().findPlayer(e.getPlayer()).ifPresent(g -> {
             McInfPlayer player = g.castTo(McInfPlayer.class);
             if (player.getStatus() != GamePlayer.Status.GAMING) return;
-            if (!(player.getTeam() instanceof HumanTeam)) return;
             e.setCancelled(true);
+            if (!(player.getTeam() instanceof HumanTeam)) return;
             GameTask.airdrop.remove();
             Random random = new Random();
             this.airdropHandlers.get(random.nextInt(this.airdropHandlers.size())).accept(player);
@@ -211,6 +194,23 @@ public class McInfListener implements Listener {
         if (using != null && using.equals(hunterKit)) return;
         final double originalDamage = e.getDamage();
         e.setDamage(originalDamage * (1 + multiplier));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onWeaponEntityDamage(WeaponDamageEntityEvent e) {
+        if (!(e.getVictim() instanceof Player)) return;
+        MinigamesCore.getApi().getPlayerManager().findPlayer((Player) e.getVictim()).ifPresent(g -> {
+            if (!(g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam)) return;
+            boolean antiVirusSuit = g.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() == 200.0;
+            double health = g.getPlayer().getHealth() - e.getDamage();
+            boolean oneChance = health < 100 && health > 0;
+            if (antiVirusSuit && oneChance) {
+                g.getPlayer().sendTitle("", "§c你的防化服已失效", 0, 40, 20);
+                g.getPlayer().playSound(g.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1, 1);
+                e.getPlayer().sendTitle("", "§4§l☣ §4感染失敗", 0, 40, 20);
+                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_ANVIL_DESTROY, 1, 1);
+            }
+        });
     }
 
     @EventHandler
