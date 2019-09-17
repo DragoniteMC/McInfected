@@ -32,6 +32,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
@@ -46,10 +47,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 public class McInfListener implements Listener {
@@ -57,6 +56,7 @@ public class McInfListener implements Listener {
     private double multiplier = 0.0;
     private final InfConfig infConfig;
     private final Set<Player> suicideCooldown = new HashSet<>();
+    private final List<Consumer<McInfPlayer>> airdropHandlers = new LinkedList<>();
 
     @EventHandler
     public void onDrop(PlayerDropItemEvent e) {
@@ -77,6 +77,41 @@ public class McInfListener implements Listener {
 
     public McInfListener(InfConfig infConfig) {
         this.infConfig = infConfig;
+        //Air drop content
+        airdropHandlers.add(infPlayer -> {
+            String kit = infPlayer.getHumanKit();
+            Player player = infPlayer.getPlayer();
+            McInfected.getApi().gainKit(player, kit);
+            player.sendTitle("", "§a彈藥已補完", 0, 60, 20);
+        });
+
+        airdropHandlers.add(infPlayer -> {
+            Player player = infPlayer.getPlayer();
+            AttributeInstance instance = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+            if (instance == null) return;
+            instance.setBaseValue(200.0);
+            player.setHealth(instance.getBaseValue());
+            player.setHealthScale(20.0);
+            player.sendTitle("", "§a獲得: 防化服", 0, 60, 20);
+        });
+
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onWeaponEntityDamage(WeaponDamageEntityEvent e) {
+        if (!(e.getVictim() instanceof Player)) return;
+        MinigamesCore.getApi().getPlayerManager().findPlayer((Player) e.getVictim()).ifPresent(g -> {
+            if (!(g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam)) return;
+            boolean antiVirusSuit = g.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() == 200.0;
+            double health = g.getPlayer().getHealth() - e.getDamage();
+            boolean oneChance = health < 100 && health > 0;
+            if (antiVirusSuit && oneChance) {
+                g.getPlayer().sendTitle("", "§c你的防化服已失效", 0, 40, 20);
+                g.getPlayer().playSound(g.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1, 1);
+                e.getPlayer().sendTitle("", "§4§l☣ §4感染失敗", 0, 40, 20);
+                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_ANVIL_DESTROY, 1, 1);
+            }
+        });
     }
 
     @EventHandler
@@ -152,9 +187,8 @@ public class McInfListener implements Listener {
             if (!(player.getTeam() instanceof HumanTeam)) return;
             e.setCancelled(true);
             GameTask.airdrop.remove();
-            String kit = player.getHumanKit();
-            McInfected.getApi().gainKit(e.getPlayer(), kit);
-            e.getPlayer().sendTitle("", "§a彈藥已補完", 0, 60, 20);
+            Random random = new Random();
+            this.airdropHandlers.get(random.nextInt(this.airdropHandlers.size())).accept(player);
         });
     }
 

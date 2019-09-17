@@ -69,15 +69,15 @@ public class McInfPlayer implements TeamPlayer {
         if (gameTeam instanceof ZombieTeam){
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
                 a.setBaseValue(2000);
-                player.setHealthScale(20);
                 player.setHealth(a.getBaseValue());
+                player.setHealthScale(20);
             });
             player.setWalkSpeed(0.25f);
         }else if (gameTeam instanceof HumanTeam){
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
                 a.setBaseValue(100);
-                player.setHealthScale(20);
                 player.setHealth(a.getBaseValue());
+                player.setHealthScale(20);
             });
             player.setWalkSpeed(0.2f);
         }

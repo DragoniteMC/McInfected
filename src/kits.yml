@@ -13,8 +13,6 @@ Human:
         - machinegunAMMO:64
         - machinegunAMMO:64
         - machinegunAMMO:64
-        - machinegunAMMO:64
-        - machinegunAMMO:52
         - handgunAMMO:60
       Normal: []
     Display: '&e機槍手'
@@ -27,10 +25,9 @@ Human:
     Armor: []
     Inventory:
       Crackshot:
-        - Grenade:1
-        - Smoke:1
-      Normal:
-        - DIAMOND_SWORD
+        - ghosthunterknife
+        - Smoke
+      Normal: []
     Display: '&e幽靈獵手'
     Description:
       - 擁有比起一般兵種更加強大的免疫能力，攻擊能力。
@@ -56,7 +53,6 @@ Human:
         - autogunAMMO:64
         - autogunAMMO:64
         - autogunAMMO:64
-        - autogunAMMO:44
         - handgunAMMO:60
       Normal: []
     Potions:
@@ -74,8 +70,6 @@ Human:
         - autogunAMMO:64
         - autogunAMMO:64
         - autogunAMMO:64
-        - autogunAMMO:64
-        - autogunAMMO:44
         - handgunAMMO:60
       Normal:
         - TNT:20
@@ -102,7 +96,7 @@ Human:
         - Grenade:1
         - Flashbang:2
         - shotgunAMMO:60
-        - shotgunAMMO:60
+        - shotgunAMMO:30
         - handgunAMMO:60
       Noemal: []
     Armor: []
@@ -125,7 +119,7 @@ Human:
         - Deagle
         - Smoke:1
         - Flashbang:2
-        - snipergunAMMO:45
+        - snipergunAMMO:30
         - handgunAMMO:60
       Normal: []
     Armor: []
@@ -154,7 +148,6 @@ Human:
         - COAL:64
         - COAL:64
         - COAL:64
-        - COAL:44
     Armor: []
     Potions:
       - STRENGTH:99998:1
@@ -188,9 +181,9 @@ Infected:
     Description:
       - 此幽靈的速度比起一般的幽靈低，
       - 卻擁有比普通幽靈超出兩倍的血量值，絕對是幽靈獵手的剋星。
-    Icon: ghostnausea
+    Icon: ghostweapons
   Leaper:
-    Disguise: ENDERMAN
+    Disguise: ZOMBIE_VILLAGER
     Armor: []
     Inventory:
       Crackshot:
@@ -200,7 +193,7 @@ Infected:
     Description:
       - 此幽靈擁有異常的彈跳能力，
       - 絕對是破防的最佳能力。
-    Icon: ghostjump
+    Icon: ghostweapons
   Blocker:
     Disguise: PIG_ZOMBIE
     Armor: []
@@ -212,7 +205,7 @@ Infected:
     Description:
       - 身體唯一可以釋出煙霧的生化幽靈。
       - 能在一瞬間令周遭玩家失明。
-    Icon: ghostblack
+    Icon: ghostweapons
   SkletSniper:
     Display: '&e狙擊骷髏'
     Description:
@@ -225,6 +218,7 @@ Infected:
       Normal: []
     Armor: []
     Disguise: SKELETON
+    KillStreaks: {}
     Icon: ghostarrow
   ChemWitch:
     Display: '&e化學毒巫'
@@ -238,7 +232,7 @@ Infected:
         - ghostweapons
       Normal: []
     Disguise: WITCH
-    Icon: ghostslow
+    Icon: ghostweapons
   Exploder:
     Display: '&e自爆幽靈'
     Description:
@@ -251,5 +245,5 @@ Infected:
       Crackshot:
         - ghostweapons
       Normal: []
-    Icon: powder
+    Icon: ghostweapons
 

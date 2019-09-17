@@ -15,6 +15,7 @@ import com.ericlam.mc.minigames.core.manager.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
@@ -105,6 +106,7 @@ public class GameTask extends InfTask {
             airdrop.setCustomNameVisible(true);
             playerManager.getGamePlayer().stream().filter(t -> t.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).forEach(p -> {
                 p.getPlayer().sendTitle("", "§a補救箱已送達。", 0, 60, 20);
+                p.getPlayer().playSound(randomLoc, Sound.ENTITY_ENDERMAN_STARE, 50, 3);
             });
             MinigamesCore.getApi().getFireWorkManager().spawnFireWork(List.of(randomLoc));
         }
