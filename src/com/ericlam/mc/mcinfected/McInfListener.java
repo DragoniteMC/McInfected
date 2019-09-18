@@ -82,7 +82,8 @@ public class McInfListener implements Listener {
             String kit = infPlayer.getHumanKit();
             Player player = infPlayer.getPlayer();
             McInfected.getApi().gainKit(player, kit);
-            player.sendTitle("", "§a彈藥已補完", 0, 60, 20);
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 2);
+            player.sendTitle("", "§a全體彈藥已補完", 0, 60, 20);
         }));
 
         airdropHandlers.add(infPlayer -> {

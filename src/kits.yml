@@ -12,7 +12,6 @@ Human:
         - machinegunAMMO:64
         - machinegunAMMO:64
         - machinegunAMMO:64
-        - machinegunAMMO:64
         - handgunAMMO:60
       Normal: []
     Display: '&e機槍手'
@@ -49,7 +48,6 @@ Human:
         - AK-47
         - Deagle
         - Grenade:1
-        - autogunAMMO:64
         - autogunAMMO:64
         - autogunAMMO:64
         - autogunAMMO:64
