@@ -37,7 +37,7 @@ public class McInfPlayer implements TeamPlayer {
         this.zombieKit = infConfig.defaultKit.get("zombie");
     }
 
-    public McInfPlayer(Player player){
+    public McInfPlayer(Player player) {
         this(player, null, null);
     }
 
@@ -66,15 +66,15 @@ public class McInfPlayer implements TeamPlayer {
     public void setTeam(GameTeam gameTeam) {
         this.gameTeam = gameTeam;
         player.setInvulnerable(true);
-        if (gameTeam instanceof ZombieTeam){
-            Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
+        if (gameTeam instanceof ZombieTeam) {
+            Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> {
                 a.setBaseValue(2000);
                 player.setHealth(a.getBaseValue());
                 player.setHealthScale(20);
             });
             player.setWalkSpeed(0.25f);
-        }else if (gameTeam instanceof HumanTeam){
-            Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a->{
+        } else if (gameTeam instanceof HumanTeam) {
+            Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> {
                 a.setBaseValue(100);
                 player.setHealth(a.getBaseValue());
                 player.setHealthScale(20);

@@ -21,7 +21,6 @@ public class ArenaConfigImpl implements ArenaConfig {
 
     public ArenaConfigImpl(Plugin plugin, LangConfig langConfig, InfConfig infConfig) {
         this.folder = new File(plugin.getDataFolder(), "Arena");
-        ;
         this.langConfig = langConfig;
         this.infConfig = infConfig;
         this.allowWarps = ImmutableMap.<String, Integer>builder().put("human", 5).put("zombie", 5).put("airdrop", 5).build();

@@ -29,28 +29,8 @@ public class McInfArena implements CreateArena {
         this.changed = false;
     }
 
-    public McInfArena(String arena, Player player){
+    public McInfArena(String arena, Player player) {
         this(arena, arena, player.getDisplayName(), player.getWorld(), new HashMap<>(), new ArrayList<>());
-    }
-
-    @Override
-    public void setAuthor(String s) {
-        this.author = s;
-    }
-
-    @Override
-    public void setWorld(World world) {
-        this.world = world;
-    }
-
-    @Override
-    public void setArenaName(String s) {
-        this.arena = s;
-    }
-
-    @Override
-    public void setDisplayName(String s) {
-        this.displayName = ChatColor.translateAlternateColorCodes('&', s);
     }
 
     @Override
@@ -70,8 +50,8 @@ public class McInfArena implements CreateArena {
 
     @Override
     public boolean isSetupCompleted() {
-        boolean human = Optional.ofNullable(warp.get("human")).map(w->w.size() > 1).orElse(false);
-        boolean zombie = Optional.ofNullable(warp.get("zombie")).map(w->w.size() > 1).orElse(false);
+        boolean human = Optional.ofNullable(warp.get("human")).map(w -> w.size() > 1).orElse(false);
+        boolean zombie = Optional.ofNullable(warp.get("zombie")).map(w -> w.size() > 1).orElse(false);
         boolean airdrop = Optional.ofNullable(warp.get("airdrop")).map(w -> w.size() > 1).orElse(false);
         return human && zombie && airdrop;
     }
@@ -82,8 +62,18 @@ public class McInfArena implements CreateArena {
     }
 
     @Override
+    public void setAuthor(String s) {
+        this.author = s;
+    }
+
+    @Override
     public World getWorld() {
         return world;
+    }
+
+    @Override
+    public void setWorld(World world) {
+        this.world = world;
     }
 
     @Override
@@ -92,8 +82,18 @@ public class McInfArena implements CreateArena {
     }
 
     @Override
+    public void setArenaName(String s) {
+        this.arena = s;
+    }
+
+    @Override
     public String getDisplayName() {
         return displayName;
+    }
+
+    @Override
+    public void setDisplayName(String s) {
+        this.displayName = ChatColor.translateAlternateColorCodes('&', s);
     }
 
     @Override
@@ -108,15 +108,15 @@ public class McInfArena implements CreateArena {
 
     @Override
     public String[] getInfo() {
-        String[] info =  new String[]{
+        String[] info = new String[]{
                 "§7場地名稱:§f ".concat(arena),
                 "§7顯示名稱:§f ".concat(displayName),
                 "§7場地作者:§f ".concat(author),
                 "§7所在世界:§f ".concat(world.getName()),
-                "§7地標:§f ".concat(warp.entrySet().stream().map(e->e.getKey()+"("+e.getValue().size()+")").collect(Collectors.joining(", "))),
+                "§7地標:§f ".concat(warp.entrySet().stream().map(e -> e.getKey() + "(" + e.getValue().size() + ")").collect(Collectors.joining(", "))),
                 "§7場地描述:§f "
         };
-        String[] desp = description.stream().map(e->" ".repeat(5).concat(ChatColor.translateAlternateColorCodes('&',e))).toArray(String[]::new);
+        String[] desp = description.stream().map(e -> " ".repeat(5).concat(ChatColor.translateAlternateColorCodes('&', e))).toArray(String[]::new);
         return (String[]) ArrayUtils.addAll(info, desp);
     }
 }

@@ -24,10 +24,11 @@ public class McInfGameStatsMechanic implements GameStatsHandler {
             "CREATE TABLE IF NOT EXISTS `McInfected_stats` (`uuid` VARCHAR(40) PRIMARY KEY NOT NULL, `name`TINYTEXT NOT NULL , `kills` MEDIUMINT DEFAULT 0, `deaths` MEDIUMINT DEFAULT 0, `wins` MEDIUMINT DEFAULT  0, `played` MEDIUMINT DEFAULT 0, `infected` MEDIUMINT DEFAULT 0, `loses` MEDIUMINT DEFAULT 0, `scores` DOUBLE DEFAULT 0)";
     private final String selectStatement = "SELECT * FROM `McInfected_stats` WHERE `uuid`=? OR `name`=?";
     private final String saveStatement = "INSERT INTO `McInfected_stats` VALUES (?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `name`=?, `kills`=?, `deaths`=?, `wins`=?, `played`=?, `infected`=?, `loses`=?, `scores`=?";
-    public McInfGameStatsMechanic(){
+
+    public McInfGameStatsMechanic() {
         this.sqlDataSource = HyperNiteMC.getAPI().getSQLDataSource();
-        CompletableFuture.runAsync(()->{
-            try(Connection connection = sqlDataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(createTableStatement)) {
+        CompletableFuture.runAsync(() -> {
+            try (Connection connection = sqlDataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(createTableStatement)) {
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -38,12 +39,12 @@ public class McInfGameStatsMechanic implements GameStatsHandler {
     @Nonnull
     @Override
     public GameStatsEditor loadGameStatsData(@Nonnull Player player) {
-        try(Connection connection = sqlDataSource.getConnection();
-            PreparedStatement statement = connection.prepareStatement(selectStatement)){
+        try (Connection connection = sqlDataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(selectStatement)) {
             statement.setString(1, player.getUniqueId().toString());
             statement.setString(2, player.getName());
             ResultSet set = statement.executeQuery();
-            if (set.next()){
+            if (set.next()) {
                 int kills = set.getInt("kills");
                 int deaths = set.getInt("deaths");
                 int wins = set.getInt("wins");
@@ -61,9 +62,9 @@ public class McInfGameStatsMechanic implements GameStatsHandler {
     @Override
     public CompletableFuture<Void> saveGameStatsData(OfflinePlayer offlinePlayer, GameStats gameStats) {
         McInfGameStats game = gameStats.castTo(McInfGameStats.class);
-        return CompletableFuture.runAsync(()->{
-            try(Connection connection = sqlDataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(saveStatement)){
+        return CompletableFuture.runAsync(() -> {
+            try (Connection connection = sqlDataSource.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(saveStatement)) {
                 statement(statement, offlinePlayer, game);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -73,8 +74,8 @@ public class McInfGameStatsMechanic implements GameStatsHandler {
 
     @Override
     public CompletableFuture<Void> saveGameStatsData(Map<OfflinePlayer, GameStats> map) {
-        return CompletableFuture.runAsync(()->{
-            try(Connection connection = sqlDataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(saveStatement)){
+        return CompletableFuture.runAsync(() -> {
+            try (Connection connection = sqlDataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(saveStatement)) {
                 for (Map.Entry<OfflinePlayer, GameStats> entry : map.entrySet()) {
                     OfflinePlayer offlinePlayer = entry.getKey();
                     McInfGameStats game = entry.getValue().castTo(McInfGameStats.class);

@@ -78,7 +78,7 @@ public class KitManager {
                 return new PotionEffect(type, dur * 20, amp, false, false);
             }).filter(Objects::nonNull).collect(Collectors.toList());
             Kit kits = new Kit(display == null ? kit : ChatColor.translateAlternateColorCodes('&', display), armors, stacks.toArray(ItemStack[]::new), description, iconItem, potionsEffect);
-            if (disguise != null){
+            if (disguise != null) {
                 try {
                     EntityType type = EntityType.valueOf(disguise);
                     kits.setDisguise(type);

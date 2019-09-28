@@ -41,13 +41,8 @@ public class McInfGameStats implements GameStatsEditor {
     }
 
     @Override
-    public void setKills(int i) {
-        this.kills = i;
-    }
-
-    @Override
-    public void setDeaths(int i) {
-        this.deaths = i;
+    public int getPlayed() {
+        return played;
     }
 
     @Override
@@ -56,18 +51,13 @@ public class McInfGameStats implements GameStatsEditor {
     }
 
     @Override
-    public void setWins(int i) {
-        this.wins = i;
-    }
-
-    @Override
-    public int getPlayed() {
-        return played;
-    }
-
-    @Override
     public int getKills() {
         return kills;
+    }
+
+    @Override
+    public void setKills(int i) {
+        this.kills = i;
     }
 
     @Override
@@ -76,8 +66,18 @@ public class McInfGameStats implements GameStatsEditor {
     }
 
     @Override
+    public void setDeaths(int i) {
+        this.deaths = i;
+    }
+
+    @Override
     public int getWins() {
         return wins;
+    }
+
+    @Override
+    public void setWins(int i) {
+        this.wins = i;
     }
 
     @Override

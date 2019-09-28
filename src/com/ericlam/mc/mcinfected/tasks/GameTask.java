@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
 
 public class GameTask extends InfTask {
 
+    public static StorageMinecart airdrop = null;
     static List<GamePlayer> alphasZombies = new ArrayList<>();
     private boolean notifiedHunter = false;
-    public static StorageMinecart airdrop = null;
 
     public static boolean shouldHunterActivate(final List<GamePlayer> gamePlayers) {
         if (gamePlayers.size() < 1) return false;

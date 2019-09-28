@@ -1,6 +1,5 @@
 package com.ericlam.mc.mcinfected.commands;
 
-import com.hypernite.mc.hnmc.core.misc.commands.CommandNode;
 import com.hypernite.mc.hnmc.core.misc.commands.DefaultCommand;
 import com.hypernite.mc.hnmc.core.misc.permission.Perm;
 

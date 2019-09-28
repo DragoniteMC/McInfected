@@ -24,11 +24,11 @@ import java.util.List;
 
 public class VotingTask extends InfTask {
 
-    private boolean loaded = false;
     static BossBar bossBar;
     static BossBar hunterBossBar;
     static CompassTracker tracker;
     private static GameBoard gameBoard;
+    private boolean loaded = false;
     private Arena arena;
 
     public static void addPlayer(GamePlayer player) {

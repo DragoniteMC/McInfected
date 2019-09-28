@@ -55,10 +55,10 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     private static McInfectedAPI api;
     private final Map<ItemStack, Consumer<InventoryClickEvent>> clickMap = new ConcurrentHashMap<>();
     private final Map<GamePlayer, Inventory> zombieInv = new ConcurrentHashMap<>();
+    private final Map<GamePlayer, Inventory> humanInv = new ConcurrentHashMap<>();
     private HumanTeam humanTeam = new HumanTeam();
     private ZombieTeam zombieTeam = new ZombieTeam();
     private InGameState preStartState = new InGameState("preStart", null);
-    private final Map<GamePlayer, Inventory> humanInv = new ConcurrentHashMap<>();
     private YamlManager configManager;
     private KitManager kitManager;
     private SkillManager skillManager = new SkillManager();

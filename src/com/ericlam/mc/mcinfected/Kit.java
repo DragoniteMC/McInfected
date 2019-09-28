@@ -22,14 +22,10 @@ public class Kit {
         this.displayName = displayName;
         this.armors = armors;
         this.inventory = inventory;
-        this.description = description.stream().map(e-> ChatColor.translateAlternateColorCodes('&',e)).collect(Collectors.toList());
+        this.description = description.stream().map(e -> ChatColor.translateAlternateColorCodes('&', e)).collect(Collectors.toList());
         this.icon = icon;
         this.potionEffects = potionEffects;
         this.disguise = EntityType.PLAYER;
-    }
-
-    public void setDisguise(EntityType disguise) {
-        this.disguise = disguise;
     }
 
     public String getDisplayName() {
@@ -58,5 +54,9 @@ public class Kit {
 
     public EntityType getDisguise() {
         return disguise;
+    }
+
+    public void setDisguise(EntityType disguise) {
+        this.disguise = disguise;
     }
 }

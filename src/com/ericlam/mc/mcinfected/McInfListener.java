@@ -53,27 +53,10 @@ import java.util.logging.Level;
 
 public class McInfListener implements Listener {
 
-    private double multiplier = 0.0;
     private final InfConfig infConfig;
     private final Set<Player> suicideCooldown = new HashSet<>();
     private final List<Consumer<McInfPlayer>> airdropHandlers = new LinkedList<>();
-
-    @EventHandler
-    public void onDrop(PlayerDropItemEvent e) {
-        e.setCancelled(true);
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onClick(InventoryClickEvent e) {
-        switch (e.getAction()) {
-            case DROP_ALL_CURSOR:
-            case DROP_ONE_CURSOR:
-                e.setCancelled(true);
-                return;
-            default:
-                break;
-        }
-    }
+    private double multiplier = 0.0;
 
     public McInfListener(InfConfig infConfig) {
         this.infConfig = infConfig;
@@ -96,6 +79,23 @@ public class McInfListener implements Listener {
             player.sendTitle("", "§a獲得: 防化服", 0, 60, 20);
         });
 
+    }
+
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent e) {
+        e.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onClick(InventoryClickEvent e) {
+        switch (e.getAction()) {
+            case DROP_ALL_CURSOR:
+            case DROP_ONE_CURSOR:
+                e.setCancelled(true);
+                return;
+            default:
+                break;
+        }
     }
 
     @EventHandler
