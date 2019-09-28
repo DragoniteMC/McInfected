@@ -14,19 +14,22 @@ import java.util.concurrent.CompletableFuture;
 
 public class ArenaConfigImpl implements ArenaConfig {
 
-    private final Plugin plugin;
+    private final File folder;
     private final LangConfig langConfig;
     private final InfConfig infConfig;
+    private final ImmutableMap<String, Integer> allowWarps;
 
     public ArenaConfigImpl(Plugin plugin, LangConfig langConfig, InfConfig infConfig) {
-        this.plugin = plugin;
+        this.folder = new File(plugin.getDataFolder(), "Arena");
+        ;
         this.langConfig = langConfig;
         this.infConfig = infConfig;
+        this.allowWarps = ImmutableMap.<String, Integer>builder().put("human", 5).put("zombie", 5).put("airdrop", 5).build();
     }
 
     @Override
     public File getArenaFolder() {
-        return new File(plugin.getDataFolder(), "Arena");
+        return folder;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class ArenaConfigImpl implements ArenaConfig {
 
     @Override
     public ImmutableMap<String, Integer> getAllowWarps() {
-        return ImmutableMap.<String, Integer>builder().put("human", 5).put("zombie", 5).put("airdrop", 5).build();
+        return allowWarps;
     }
 
     @Override

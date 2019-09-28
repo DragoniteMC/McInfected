@@ -20,8 +20,8 @@ public class McInfGameStats implements GameStatsEditor {
         this.infected = infected;
     }
 
-    public McInfGameStats(){
-        this(0,0,0,0,0,0);
+    public McInfGameStats() {
+        this(0, 0, 0, 0, 0, 0);
     }
 
     public int getLoses() {
@@ -87,6 +87,13 @@ public class McInfGameStats implements GameStatsEditor {
 
     @Override
     public String[] getInfo() {
-        return new String[0];
+        return new String[]{
+                "§e殺敵數: §f" + kills,
+                "§e勝利數: §f" + wins,
+                "§e遊玩數: §f" + played,
+                "§e死亡數: §f" + deaths,
+                "§e失敗數: §f" + loses,
+                "§e感染數: §f" + infected
+        };
     }
 }
