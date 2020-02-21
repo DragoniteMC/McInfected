@@ -1,0 +1,13 @@
+name: McInfected
+version: ${project.version}
+api-version: "1.13"
+main: com.ericlam.mc.mcinfected.main.McInfected
+depend:
+  - Minigames-Core
+  - LibsDisguises
+  - CustomCSWeapon
+softdepend:
+  - TintHealth
+commands:
+  inf-arena:
+    description: inf arena setup command

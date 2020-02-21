@@ -1,0 +1,43 @@
+gameTime:
+  game: 150
+  infecting: 25
+  voting: 60
+
+game:
+  alphaPercent: 0.25
+  hunterPercent: 0.188
+  autoStart: 2
+  maxRound: 8
+
+defaultKit:
+  human: Assaulter
+  zombie: Speeder
+  hunter: Hunter
+
+damageMultiplier: 0.3
+
+fallbackServer: inflobby
+
+compassGivenInSec: 65
+
+sounds:
+  skill:
+    Launch: ENTITY_ENDER_DRAGON_AMBIENT:1:0.7
+    CoolDown: ENTITY_ENDER_DRAGON_FLAP:1:0.7
+  voting:
+    Countdown: BLOCK_NOTE_BLOCK_BELL:1:3
+    Final: ENTITY_ELDER_GUARDIAN_CURSE:1:1
+  infecting:
+    Countdown: BLOCK_NOTE_BLOCK_BELL:1:3
+    Final: BLOCK_ANVIL_USE:1:1
+  hunter:
+    Active: ENTITY_BLAZE_DEATH:3:3
+    Burn: ENTITY_IRON_GOLEM_DEATH:3:0.3
+    Kill: ENTITY_ENDERMAN_DEATH:3:2
+    Death: ENTITY_ENDERMAN_DEATH:3:0.3
+  game:
+    Countdown: BLOCK_NOTE_BLOCK_BELL:1:0
+    Final: BLOCK_NOTE_BLOCK_BANJO:1:2
+  compass: ENTITY_HORSE_SADDLE:1:0.75
+  infected: ENTITY_ZOMBIE_AMBIENT:1:1
+  respawn: ENTITY_ENDER_DRAGON_SHOOT:1:1
