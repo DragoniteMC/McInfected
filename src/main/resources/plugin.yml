@@ -1,6 +1,6 @@
 name: McInfected
 version: ${project.version}
-api-version: "1.13"
+api-version: "1.15"
 main: com.ericlam.mc.mcinfected.main.McInfected
 depend:
   - Minigames-Core
