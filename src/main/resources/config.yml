@@ -20,6 +20,8 @@ fallbackServer: inflobby
 
 compassGivenInSec: 65
 
+lobby:
+
 sounds:
   skill:
     Launch: ENTITY_ENDER_DRAGON_AMBIENT:1:0.7
