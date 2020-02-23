@@ -59,13 +59,13 @@
         </dependency>
         <dependency>
             <groupId>com.hypernite.mc</groupId>
-            <artifactId>HyperNiteMC-API</artifactId>
-            <version>7.5.4</version>
+            <artifactId>core-api</artifactId>
+            <version>7.5.7</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.hypernite.mc</groupId>
-            <artifactId>Minigames-API</artifactId>
+            <artifactId>minigame-api</artifactId>
             <version>0.1.6</version>
             <scope>provided</scope>
         </dependency>
