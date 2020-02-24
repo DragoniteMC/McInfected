@@ -71,7 +71,7 @@ public class KitManager {
             }).filter(Objects::nonNull).collect(Collectors.toList()));
             ItemStack[] armors = armor.size() == 0 ? null : armor.stream().map(s -> s == null ? Material.AIR : s).map(ItemStack::new).toArray(ItemStack[]::new);
             ItemStack iconItem = Optional.ofNullable(CSPapi.updateItemStackFeaturesNonPlayer(icon, csUtility.generateWeapon(icon))).orElseGet(() -> new ItemStack(Material.valueOf(icon)));
-            List<PotionEffect> potionsEffect = potions.stream().map(s -> s.split(":")).filter(s -> s.length >= 3).map(s -> {
+            List<PotionEffect> potionsEffect = Optional.ofNullable(potions).orElse(List.of()).stream().map(s -> s.split(":")).filter(s -> s.length >= 3).map(s -> {
                 PotionEffectType type = PotionEffectType.getByName(s[0]);
                 if (type == null) return null;
                 int dur = Integer.parseInt(s[1]);
