@@ -39,19 +39,23 @@ public class KitManager {
         this.loadKit("Infected", kitConfig.Infected);
     }
 
+    private <T> List<T> nonNull(List<T> t) {
+        return Optional.ofNullable(t).orElse(List.of());
+    }
+
     private void loadKit(String section, Map<String, KitConfig.Kit> kitMap) {
         if (kitMap.isEmpty()) return;
         for (var en : kitMap.entrySet()) {
             String kitName = en.getKey();
             KitConfig.Kit kit = en.getValue();
-            List<Material> armor = kit.Armor;
+            List<Material> armor = nonNull(kit.Armor);
             String display = kit.Display;
-            List<String> csItems = kit.Inventory.Crackshot;
-            List<String> items = kit.Inventory.Normal;
-            List<String> description = kit.Description.stream().map(e -> ChatColor.translateAlternateColorCodes('&', e)).collect(Collectors.toList());
+            List<String> csItems = nonNull(kit.Inventory.Crackshot);
+            List<String> items = nonNull(kit.Inventory.Normal);
+            List<String> description = nonNull(kit.Description).stream().map(e -> ChatColor.translateAlternateColorCodes('&', e)).collect(Collectors.toList());
             String icon = kit.Icon;
             EntityType disguise = kit.Disguise;
-            List<String> potions = kit.Potions;
+            List<String> potions = nonNull(kit.Potions);
             List<ItemStack> stacks = csItems.stream().map(s -> s.split(":")).map(arr -> {
                 ItemStack stack = csUtility.generateWeapon(arr[0]);
                 stack = CSPapi.updateItemStackFeaturesNonPlayer(arr[0], stack);
@@ -71,7 +75,7 @@ public class KitManager {
             }).filter(Objects::nonNull).collect(Collectors.toList()));
             ItemStack[] armors = armor.size() == 0 ? null : armor.stream().map(s -> s == null ? Material.AIR : s).map(ItemStack::new).toArray(ItemStack[]::new);
             ItemStack iconItem = Optional.ofNullable(CSPapi.updateItemStackFeaturesNonPlayer(icon, csUtility.generateWeapon(icon))).orElseGet(() -> new ItemStack(Material.valueOf(icon)));
-            List<PotionEffect> potionsEffect = Optional.ofNullable(potions).orElse(List.of()).stream().map(s -> s.split(":")).filter(s -> s.length >= 3).map(s -> {
+            List<PotionEffect> potionsEffect = potions.stream().map(s -> s.split(":")).filter(s -> s.length >= 3).map(s -> {
                 PotionEffectType type = PotionEffectType.getByName(s[0]);
                 if (type == null) return null;
                 int dur = Integer.parseInt(s[1]);
