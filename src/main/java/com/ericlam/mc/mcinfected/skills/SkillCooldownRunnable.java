@@ -12,9 +12,9 @@ import java.util.Map;
 
 public class SkillCooldownRunnable extends BukkitRunnable {
 
-    private Player player;
+    private final Player player;
     private double timer;
-    private Map<Player, Boolean> cooldown;
+    private final Map<Player, Boolean> cooldown;
 
     public SkillCooldownRunnable(Player player, long timer, Map<Player, Boolean> cooldown) {
         this.player = player;

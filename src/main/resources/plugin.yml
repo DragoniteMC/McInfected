@@ -7,7 +7,7 @@ depend:
   - LibsDisguises
   - CustomCSWeapon
 softdepend:
-  - TintHealth
+  - MinigameMiscs
 commands:
   inf-arena:
     description: inf arena setup command

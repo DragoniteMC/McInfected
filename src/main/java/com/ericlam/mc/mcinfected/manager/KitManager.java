@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class KitManager {
     private final Map<String, Kit> kitMap = new LinkedHashMap<>();
     private final Map<OfflinePlayer, String> currentKit = new ConcurrentHashMap<>();
-    private CSUtility csUtility = API.cs();
+    private final CSUtility csUtility = API.cs();
 
 
     public KitManager(KitConfig kitConfig) {

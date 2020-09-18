@@ -10,18 +10,20 @@ public class McInfGameStats implements GameStatsEditor {
     private int wins;
     private int loses;
     private int infected;
+    private double scores;
 
-    public McInfGameStats(int kills, int deaths, int played, int wins, int loses, int infected) {
+    public McInfGameStats(int kills, int deaths, int played, int wins, int loses, int infected, double scores) {
         this.kills = kills;
         this.deaths = deaths;
         this.played = played;
         this.wins = wins;
         this.loses = loses;
         this.infected = infected;
+        this.scores = scores;
     }
 
     public McInfGameStats() {
-        this(0, 0, 0, 0, 0, 0);
+        this(0, 0, 0, 0, 0, 0, 0);
     }
 
     public int getLoses() {
@@ -82,7 +84,12 @@ public class McInfGameStats implements GameStatsEditor {
 
     @Override
     public double getScores() {
-        return kills + wins * 5;
+        return scores;
+    }
+
+    @Override
+    public void setScores(double v) {
+        this.scores = v;
     }
 
     @Override

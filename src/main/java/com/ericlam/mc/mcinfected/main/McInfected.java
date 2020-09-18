@@ -15,6 +15,7 @@ import com.ericlam.mc.mcinfected.implement.mechanic.McInfPlayerMechanic;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.manager.KitManager;
+import com.ericlam.mc.mcinfected.manager.MiscManager;
 import com.ericlam.mc.mcinfected.skills.InfectedSkill;
 import com.ericlam.mc.mcinfected.skills.SkillListener;
 import com.ericlam.mc.mcinfected.skills.SkillManager;
@@ -31,7 +32,6 @@ import com.hypernite.mc.hnmc.core.builders.InventoryBuilder;
 import com.hypernite.mc.hnmc.core.builders.ItemStackBuilder;
 import com.hypernite.mc.hnmc.core.main.HyperNiteMC;
 import com.hypernite.mc.hnmc.core.managers.YamlManager;
-import fr.mrsheepsheep.tinthealth.THAPI;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -56,15 +56,15 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     private final Map<ItemStack, Consumer<InventoryClickEvent>> clickMap = new ConcurrentHashMap<>();
     private final Map<GamePlayer, Inventory> zombieInv = new ConcurrentHashMap<>();
     private final Map<GamePlayer, Inventory> humanInv = new ConcurrentHashMap<>();
-    private HumanTeam humanTeam = new HumanTeam();
-    private ZombieTeam zombieTeam = new ZombieTeam();
-    private InGameState preStartState = new InGameState("preStart", null);
+    private final HumanTeam humanTeam = new HumanTeam();
+    private final ZombieTeam zombieTeam = new ZombieTeam();
+    private final InGameState preStartState = new InGameState("preStart", null);
     private YamlManager configManager;
     private LangConfig msg;
     private KitManager kitManager;
-    private SkillManager skillManager = new SkillManager();
-    private InGameState gameEndState = new InGameState("gameEnd", null);
-    private boolean tintEnabled;
+    private final SkillManager skillManager = new SkillManager();
+    private final InGameState gameEndState = new InGameState("gameEnd", null);
+    private MiscManager miscManager;
 
     public static McInfectedAPI getApi() {
         return api;
@@ -85,14 +85,12 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
 
     @Override
     public void launchSkillEffect(Player p) {
-        if (!tintEnabled) return;
-        THAPI.setTint(p, 100);
+        Optional.ofNullable(miscManager).ifPresent(m -> m.setTint(p));
     }
 
     @Override
     public void removeSkillEffect(Player p) {
-        if (!tintEnabled) return;
-        THAPI.removeTint(p);
+        Optional.ofNullable(miscManager).ifPresent(m -> m.removeTint(p));
     }
 
     @Override
@@ -167,7 +165,9 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     @Override
     public void onEnable() {
         api = this;
-        tintEnabled = getServer().getPluginManager().getPlugin("TintHealth") != null;
+        if (getServer().getPluginManager().isPluginEnabled("MinigameMiscs")) {
+            this.miscManager = new MiscManager();
+        }
         configManager = HyperNiteMC.getAPI().getFactory().getConfigFactory(this)
                 .register("config.yml", InfConfig.class)
                 .register("kits.yml", KitConfig.class)

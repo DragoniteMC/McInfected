@@ -51,7 +51,8 @@ public class McInfGameStatsMechanic implements GameStatsHandler {
                 int played = set.getInt("played");
                 int infected = set.getInt("infected");
                 int loses = set.getInt("loses");
-                return new McInfGameStats(kills, deaths, played, wins, loses, infected);
+                double scores = set.getDouble("scores");
+                return new McInfGameStats(kills, deaths, played, wins, loses, infected, scores);
             }
         } catch (SQLException e) {
             e.printStackTrace();

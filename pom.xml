@@ -3,7 +3,7 @@
 
     <groupId>com.ericlam.mc</groupId>
     <artifactId>McInfected</artifactId>
-    <version>0.1.9</version>
+    <version>0.1.10</version>
 
     <repositories>
         <repository>
@@ -12,7 +12,7 @@
         </repository>
         <repository>
             <id>xuan</id>
-            <url>http://xuan.nctu.me:8081/repository/Maven/</url>
+            <url>https://xuan.nctu.me:8081/repository/Maven/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
@@ -26,10 +26,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>other</groupId>
-            <artifactId>tint-health</artifactId>
-            <version>1.4.7</version>
-            <scope>provided</scope>
+            <groupId>com.hypernite.mc</groupId>
+            <artifactId>minigame-miscs</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>LibsDisguises</groupId>
@@ -54,19 +53,19 @@
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
+            <version>1.16.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.hypernite.mc</groupId>
             <artifactId>core-api</artifactId>
-            <version>7.5.9</version>
+            <version>7.6.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.hypernite.mc</groupId>
             <artifactId>minigame-api</artifactId>
-            <version>0.1.8</version>
+            <version>0.1.11</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -102,7 +101,6 @@
     </dependencies>
 
     <build>
-        <finalName>McInfected</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

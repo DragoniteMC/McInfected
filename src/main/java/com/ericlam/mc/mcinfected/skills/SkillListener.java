@@ -24,9 +24,9 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import java.util.Optional;
 
 public class SkillListener implements Listener {
-    private SkillManager skillManager;
-    private InfConfig infConfig;
-    private GameUtils gameUtils;
+    private final SkillManager skillManager;
+    private final InfConfig infConfig;
+    private final GameUtils gameUtils;
 
     public SkillListener(SkillManager skillManager, InfConfig infConfig) {
         this.skillManager = skillManager;
