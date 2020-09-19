@@ -105,7 +105,6 @@ public class HunterManager {
                 player.setHealthScale(20);
             });
         });
-        return;
     }
 
 }

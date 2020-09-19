@@ -52,13 +52,15 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     private final HumanTeam humanTeam = new HumanTeam();
     private final ZombieTeam zombieTeam = new ZombieTeam();
     private final InGameState preStartState = new InGameState("preStart", null);
-    private final SkillManager skillManager = new SkillManager();
     private final InGameState gameEndState = new InGameState("gameEnd", null);
+
+    private final SkillManager skillManager = new SkillManager();
+    private final AirDropManager airDropManager = new AirDropManager();
 
     private YamlManager configManager;
     private KitManager kitManager;
     private MiscManager miscManager;
-    private AirDropManager airDropManager;
+
     private HunterManager hunterManager;
 
     public static McInfectedAPI getApi() {
@@ -155,7 +157,7 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
                 .dump();
         LangConfig msg = configManager.getConfigAs(LangConfig.class);
         kitManager = new KitManager(configManager);
-        airDropManager = new AirDropManager();
+        hunterManager = new HunterManager(configManager);
         Compulsory com = MinigamesCore.getRegistration().getCompulsory();
         com.registerVoteGUI(new InventoryBuilder(1, "&c地圖投票"), 0, 2, 4, 6, 8);
         com.registerArenaMechanic(new McInfArenaMechanic());

@@ -3,7 +3,7 @@
 
     <groupId>com.ericlam.mc</groupId>
     <artifactId>McInfected</artifactId>
-    <version>0.1.13</version>
+    <version>0.1.14</version>
 
     <repositories>
         <repository>
