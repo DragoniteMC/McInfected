@@ -8,9 +8,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class BossbarUpdateRunnable extends BukkitRunnable {
 
-    private BossBar bossBar;
-    private long humans;
-    private long zombies;
+    private final BossBar bossBar;
+    private final long humans;
+    private final long zombies;
 
     public BossbarUpdateRunnable(BossBar bossBar, long humans, long zombies) {
         this.bossBar = bossBar;

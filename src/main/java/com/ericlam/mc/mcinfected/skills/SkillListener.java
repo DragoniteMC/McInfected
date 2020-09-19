@@ -5,7 +5,7 @@ import com.ericlam.mc.mcinfected.config.InfConfig;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.main.McInfected;
-import com.ericlam.mc.mcinfected.tasks.GameTask;
+import com.ericlam.mc.mcinfected.manager.HunterManager;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.event.player.CrackShotDeathEvent;
@@ -15,23 +15,22 @@ import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.GameUtils;
 import me.DeeCaaD.CrackShotPlus.API;
 import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-
-import java.util.Optional;
 
 public class SkillListener implements Listener {
     private final SkillManager skillManager;
     private final InfConfig infConfig;
     private final GameUtils gameUtils;
+    private final HunterManager hunterManager;
 
-    public SkillListener(SkillManager skillManager, InfConfig infConfig) {
+
+    public SkillListener(SkillManager skillManager, InfConfig infConfig, HunterManager hunterManager) {
         this.skillManager = skillManager;
         this.infConfig = infConfig;
         gameUtils = MinigamesCore.getApi().getGameUtils();
+        this.hunterManager = hunterManager;
     }
 
     @EventHandler
@@ -44,21 +43,7 @@ public class SkillListener implements Listener {
             if (g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam) {
                 skillManager.launchSkill(e.getPlayer());
             } else if (g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam) {
-                if (GameTask.shouldHunterActivate(MinigamesCore.getApi().getPlayerManager().getGamePlayer())) {
-                    String hunterKit = infConfig.defaultKit.get("hunter");
-                    String using = McInfected.getApi().currentKit(g.getPlayer());
-                    if (using != null && using.equals(hunterKit)) return;
-                    McInfected.getApi().gainKit(g.getPlayer(), hunterKit);
-                    gameUtils.playSound(e.getPlayer(), infConfig.sounds.hunter.get("Burn").split(":"));
-                    e.getPlayer().sendTitle("", "§b已化身成幽靈獵手。", 0, 30, 0);
-                    e.getPlayer().setGlowing(true);
-                    Player player = e.getPlayer();
-                    Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> {
-                        a.setBaseValue(2048);
-                        player.setHealth(a.getBaseValue());
-                        player.setHealthScale(20);
-                    });
-                }
+                hunterManager.activateHunter(e.getPlayer());
             }
         });
     }

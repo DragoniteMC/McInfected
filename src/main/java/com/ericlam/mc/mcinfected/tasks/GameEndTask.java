@@ -105,7 +105,7 @@ public class GameEndTask extends InfTask {
     public long run(long l) {
         if (l == 4) {
             VotingTask.bossBar.setVisible(true);
-            VotingTask.hunterBossBar.setVisible(false);
+            hunterManager.setBarVisible(false);
         }
         return l;
     }

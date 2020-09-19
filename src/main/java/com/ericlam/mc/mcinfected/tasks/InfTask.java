@@ -3,6 +3,8 @@ package com.ericlam.mc.mcinfected.tasks;
 import com.ericlam.mc.mcinfected.config.InfConfig;
 import com.ericlam.mc.mcinfected.config.LangConfig;
 import com.ericlam.mc.mcinfected.main.McInfected;
+import com.ericlam.mc.mcinfected.manager.AirDropManager;
+import com.ericlam.mc.mcinfected.manager.HunterManager;
 import com.ericlam.mc.minigames.core.SectionTask;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
 
@@ -12,6 +14,9 @@ public abstract class InfTask implements SectionTask {
     protected McInfected mcinf;
     protected InfConfig infConfig;
     protected LangConfig msg;
+    protected AirDropManager airDropManager;
+    protected HunterManager hunterManager;
+
     private boolean running;
 
     public InfTask() {
@@ -19,6 +24,8 @@ public abstract class InfTask implements SectionTask {
         this.mcinf = McInfected.getPlugin(McInfected.class);
         this.msg = mcinf.getConfigManager().getConfigAs(LangConfig.class);
         this.infConfig = mcinf.getConfigManager().getConfigAs(InfConfig.class);
+        this.airDropManager = mcinf.getAirDropManager();
+        this.hunterManager = mcinf.getHunterManager();
     }
 
     @Override

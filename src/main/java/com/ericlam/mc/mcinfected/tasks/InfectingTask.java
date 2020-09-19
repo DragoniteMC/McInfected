@@ -2,6 +2,7 @@ package com.ericlam.mc.mcinfected.tasks;
 
 import com.ericlam.mc.csweapon.CustomCSWeapon;
 import com.ericlam.mc.mcinfected.main.SoundUtils;
+import com.ericlam.mc.mcinfected.manager.HunterManager;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.function.CircularIterator;
 import com.ericlam.mc.minigames.core.game.GameState;
@@ -28,7 +29,7 @@ public class InfectingTask extends InfTask {
         playerManager.getGamePlayer().forEach(p -> {
             p.castTo(TeamPlayer.class).setTeam(mcinf.getHumanTeam());
             VotingTask.bossBar.addPlayer(p.getPlayer());
-            VotingTask.hunterBossBar.addPlayer(p.getPlayer());
+            HunterManager.addPlayer(p);
             p.getPlayer().teleportAsync(locationCircularIterator.next());
             p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
         });

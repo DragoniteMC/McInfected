@@ -3,7 +3,7 @@
 
     <groupId>com.ericlam.mc</groupId>
     <artifactId>McInfected</artifactId>
-    <version>0.1.10</version>
+    <version>0.1.12</version>
 
     <repositories>
         <repository>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.hypernite.mc</groupId>
             <artifactId>minigame-api</artifactId>
-            <version>0.1.11</version>
+            <version>0.1.12</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

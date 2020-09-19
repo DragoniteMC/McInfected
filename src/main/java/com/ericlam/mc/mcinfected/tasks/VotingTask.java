@@ -1,10 +1,10 @@
 package com.ericlam.mc.mcinfected.tasks;
 
-import com.ericlam.mc.mcinfected.config.LangConfig;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.main.McInfected;
 import com.ericlam.mc.mcinfected.main.SoundUtils;
+import com.ericlam.mc.mcinfected.manager.HunterManager;
 import com.ericlam.mc.minigames.core.arena.Arena;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
@@ -25,7 +25,6 @@ import java.util.List;
 public class VotingTask extends InfTask {
 
     static BossBar bossBar;
-    static BossBar hunterBossBar;
     static CompassTracker tracker;
     private static GameBoard gameBoard;
     private boolean loaded = false;
@@ -35,21 +34,12 @@ public class VotingTask extends InfTask {
         if (gameBoard == null) return;
         gameBoard.addPlayer(player);
         bossBar.addPlayer(player.getPlayer());
-        hunterBossBar.addPlayer(player.getPlayer());
+        HunterManager.addPlayer(player);
     }
 
     public static void switchTeam(TeamPlayer player) {
         if (gameBoard == null) return;
         gameBoard.switchTeam(player);
-    }
-
-    public static void updateHunterBossBar(List<GamePlayer> gamePlayers) {
-        long humans = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).count();
-        long zombies = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam).count();
-        String tit = McInfected.getApi().getConfigManager().getConfigAs(LangConfig.class).getPure("Picture.Bar.Hunter");
-        hunterBossBar.setTitle(tit.replace("<h>", "§k0").replace("<z>", "§k0"));
-        hunterBossBar.setColor(BarColor.RED);
-        new BossbarUpdateRunnable(hunterBossBar, humans, zombies).runTaskLater(McInfected.getPlugin(McInfected.class), 3L);
     }
 
     static void updateBoard(long l, List<GamePlayer> gamePlayers, String stats) {
@@ -83,9 +73,7 @@ public class VotingTask extends InfTask {
     public void onFinish() {
         McInfected mcinf = McInfected.getPlugin(McInfected.class);
         bossBar = Bukkit.createBossBar(msg.getPure("Picture.Bar.Title").replace("<z>", "0").replace("<h>", "0"), BarColor.PURPLE, BarStyle.SOLID);
-        hunterBossBar = Bukkit.createBossBar(msg.getPure("Picture.Bar.Hunter"), BarColor.WHITE, BarStyle.SOLID);
-        hunterBossBar.setProgress(0.5);
-        hunterBossBar.setVisible(false);
+        hunterManager.initializeBar();
         gameBoard = MinigamesCore.getProperties().getGameFactory()
                 .getScoreboardFactory()
                 .setTitle(arena.getDisplayName().concat("§7 - §f00:00"))

@@ -189,7 +189,7 @@ Infected:
       - 絕對是破防的最佳能力。
     Icon: ghostweapons
   Blocker:
-    Disguise: PIG_ZOMBIE
+    Disguise: PIGLIN
     Armor: []
     Inventory:
       Crackshot:

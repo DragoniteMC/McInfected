@@ -1,11 +1,16 @@
 package com.ericlam.mc.mcinfected.manager;
 
 import com.ericlam.mc.mcinfected.Kit;
+import com.ericlam.mc.mcinfected.config.InfConfig;
 import com.ericlam.mc.mcinfected.config.KitConfig;
 import com.ericlam.mc.mcinfected.config.LangConfig;
 import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.main.McInfected;
+import com.ericlam.mc.minigames.core.main.MinigamesCore;
+import com.hypernite.mc.hnmc.core.builders.InventoryBuilder;
+import com.hypernite.mc.hnmc.core.builders.ItemStackBuilder;
+import com.hypernite.mc.hnmc.core.managers.YamlManager;
 import com.shampaggon.crackshot.CSUtility;
 import me.DeeCaaD.CrackShotPlus.API;
 import me.DeeCaaD.CrackShotPlus.CSPapi;
@@ -18,6 +23,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
@@ -30,20 +36,61 @@ import java.util.stream.Collectors;
 
 public class KitManager {
     private final Map<String, Kit> kitMap = new LinkedHashMap<>();
+    private final Map<String, Kit> humanKitMap = new HashMap<>();
+    private final Map<String, Kit> zombieKitMap = new HashMap<>();
     private final Map<OfflinePlayer, String> currentKit = new ConcurrentHashMap<>();
+    private final YamlManager configManager;
+    private Inventory humanKitSelector;
     private final CSUtility csUtility = API.cs();
+    private Inventory zombieKitSelector;
 
-
-    public KitManager(KitConfig kitConfig) {
-        this.loadKit("Human", kitConfig.Human);
-        this.loadKit("Infected", kitConfig.Infected);
+    public KitManager(YamlManager configManager) {
+        this.configManager = configManager;
+        var kitConfig = configManager.getConfigAs(KitConfig.class);
+        this.loadKit(humanKitMap, kitConfig.Human);
+        this.loadKit(zombieKitMap, kitConfig.Infected);
     }
 
     private <T> List<T> nonNull(List<T> t) {
         return Optional.ofNullable(t).orElse(List.of());
     }
 
-    private void loadKit(String section, Map<String, KitConfig.Kit> kitMap) {
+    public Inventory getKitSelector(boolean human) {
+        if (human && humanKitSelector != null) return humanKitSelector;
+        else if (zombieKitSelector != null) return zombieKitSelector;
+        var kits = human ? humanKitMap : zombieKitMap;
+        var msg = configManager.getConfigAs(LangConfig.class);
+        int row = (int) Math.ceil((double) kits.size() / 9);
+        InventoryBuilder builder = new InventoryBuilder(row == 0 ? 1 : row, "&9選擇職業");
+        kits.forEach((k, v) -> {
+            if (k.equals(configManager.getConfigAs(InfConfig.class).defaultKit.get("hunter"))) return;
+            var desc = new LinkedList<>(v.getDescription());
+            desc.add(0, msg.getPure("Command.Kit.Choose").replace("<kit>", v.getDisplayName()));
+            desc.add(1, " ");
+            ItemStack stack = new ItemStackBuilder(v.getIcon()).displayName(v.getDisplayName()).lore(desc)
+                    .onClick(e -> {
+                        e.setCancelled(true);
+                        Player clicked = (Player) e.getWhoClicked();
+                        MinigamesCore.getApi().getPlayerManager().findPlayer(clicked).ifPresent(player1 -> {
+                            McInfPlayer infPlayer = player1.castTo(McInfPlayer.class);
+                            if (human) infPlayer.setHumanKit(k);
+                            else infPlayer.setZombieKit(k);
+                            clicked.sendMessage(msg.get("Command.Kit.Chosen").replace("<team>", human ? "人類" : "生化幽靈").replace("<kit>", v.getDisplayName()));
+                        });
+
+                    }).build();
+            builder.item(stack);
+        });
+        Inventory inv = builder.build();
+        if (human) {
+            this.humanKitSelector = inv;
+        } else {
+            this.zombieKitSelector = inv;
+        }
+        return getKitSelector(human);
+    }
+
+    private void loadKit(Map<String, Kit> toInsert, Map<String, KitConfig.Kit> kitMap) {
         if (kitMap.isEmpty()) return;
         for (var en : kitMap.entrySet()) {
             String kitName = en.getKey();
@@ -89,12 +136,8 @@ public class KitManager {
                 } catch (IllegalArgumentException ignored) {
                 }
             }
-            this.kitMap.put(kitName, kits);
+            toInsert.put(kitName, kits);
         }
-    }
-
-    public Map<String, Kit> getKitMap() {
-        return kitMap;
     }
 
     public void removeLastKit(Player target, boolean invClear) {

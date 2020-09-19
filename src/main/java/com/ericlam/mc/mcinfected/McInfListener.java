@@ -8,8 +8,9 @@ import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.main.McInfected;
+import com.ericlam.mc.mcinfected.manager.AirDropManager;
+import com.ericlam.mc.mcinfected.manager.HunterManager;
 import com.ericlam.mc.mcinfected.tasks.GameEndTask;
-import com.ericlam.mc.mcinfected.tasks.GameTask;
 import com.ericlam.mc.mcinfected.tasks.VotingTask;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
@@ -25,6 +26,7 @@ import com.ericlam.mc.minigames.core.game.GameTeam;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.GameUtils;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
+import com.hypernite.mc.hnmc.core.managers.YamlManager;
 import com.hypernite.mc.hnmc.core.utils.Tools;
 import com.shampaggon.crackshot.events.WeaponDamageEntityEvent;
 import me.DeeCaaD.CrackShotPlus.API;
@@ -36,7 +38,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
-import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -47,8 +48,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.text.DecimalFormat;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class McInfListener implements Listener {
@@ -56,14 +59,18 @@ public class McInfListener implements Listener {
     private final InfConfig infConfig;
     private final LangConfig msg;
     private final Set<Player> suicideCooldown = new HashSet<>();
-    private final List<Consumer<McInfPlayer>> airdropHandlers = new LinkedList<>();
+    private final AirDropManager airDropManager;
+    private final HunterManager hunterManager;
     private double multiplier = 0.0;
 
-    public McInfListener(InfConfig infConfig, LangConfig langConfig) {
-        this.infConfig = infConfig;
-        this.msg = langConfig;
+    public McInfListener(YamlManager yamlManager, AirDropManager airDropManager, HunterManager hunterManager) {
+        this.infConfig = yamlManager.getConfigAs(InfConfig.class);
+        this.msg = yamlManager.getConfigAs(LangConfig.class);
+        this.airDropManager = airDropManager;
+        this.hunterManager = hunterManager;
+
         //Air drop content
-        airdropHandlers.add(p -> MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).map(g -> g.castTo(McInfPlayer.class)).forEach(infPlayer -> {
+        airDropManager.addAirDropHandler(p -> MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).map(g -> g.castTo(McInfPlayer.class)).forEach(infPlayer -> {
             String kit = infPlayer.getHumanKit();
             Player player = infPlayer.getPlayer();
             McInfected.getApi().gainKit(player, kit);
@@ -71,7 +78,7 @@ public class McInfListener implements Listener {
             player.sendTitle("", "§a全體彈藥已補完", 0, 60, 20);
         }));
 
-        airdropHandlers.add(infPlayer -> {
+        airDropManager.addAirDropHandler(infPlayer -> {
             Player player = infPlayer.getPlayer();
             AttributeInstance instance = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
             if (instance == null) return;
@@ -164,18 +171,7 @@ public class McInfListener implements Listener {
 
     @EventHandler
     public void onInteractAirDrop(PlayerInteractEntityEvent e) {
-        if (GameTask.airdrop == null) return;
-        StorageMinecart minecart = GameTask.airdrop;
-        if (e.getRightClicked() != minecart) return;
-        MinigamesCore.getApi().getPlayerManager().findPlayer(e.getPlayer()).ifPresent(g -> {
-            McInfPlayer player = g.castTo(McInfPlayer.class);
-            if (player.getStatus() != GamePlayer.Status.GAMING) return;
-            e.setCancelled(true);
-            if (!(player.getTeam() instanceof HumanTeam)) return;
-            GameTask.airdrop.remove();
-            Random random = new Random();
-            this.airdropHandlers.get(random.nextInt(this.airdropHandlers.size())).accept(player);
-        });
+        airDropManager.onInteractAirDrop(e);
     }
 
     @EventHandler
@@ -258,7 +254,7 @@ public class McInfListener implements Listener {
 
         if (victim.getTeam() instanceof ZombieTeam) {
             if (victim.getStatus() == GamePlayer.Status.SPECTATING) {
-                VotingTask.updateHunterBossBar(MinigamesCore.getApi().getPlayerManager().getGamePlayer());
+                hunterManager.updateHunterBossBar();
                 return;
             }
             MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.respawn.split(":"));
@@ -277,7 +273,7 @@ public class McInfListener implements Listener {
                 if (using.equals(hunterKit)) {
                     Bukkit.getOnlinePlayers().forEach(p -> utils.playSound(p, infConfig.sounds.hunter.get("Death").split(":")));
                     MinigamesCore.getApi().getPlayerManager().setSpectator(victim);
-                    VotingTask.updateHunterBossBar(MinigamesCore.getApi().getPlayerManager().getGamePlayer());
+                    hunterManager.updateHunterBossBar();
                     return;
                 }
             }
@@ -292,7 +288,7 @@ public class McInfListener implements Listener {
                 g.getPlayer().playSound(g.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             });
         }
-        VotingTask.updateHunterBossBar(MinigamesCore.getApi().getPlayerManager().getGamePlayer());
+        hunterManager.updateHunterBossBar();
     }
 
     @EventHandler

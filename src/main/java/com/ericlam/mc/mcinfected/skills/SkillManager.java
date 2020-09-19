@@ -54,4 +54,8 @@ public class SkillManager {
         });
         skillUsing.clear();
     }
+
+    boolean isUsingSkill(Player player) {
+        return skillUsing.containsKey(player);
+    }
 }

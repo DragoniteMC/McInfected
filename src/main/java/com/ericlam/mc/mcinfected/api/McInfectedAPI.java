@@ -4,10 +4,11 @@ import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
 import com.ericlam.mc.mcinfected.skills.InfectedSkill;
-import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.hypernite.mc.hnmc.core.managers.YamlManager;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+
+import java.util.function.Consumer;
 
 public interface McInfectedAPI {
 
@@ -23,6 +24,8 @@ public interface McInfectedAPI {
 
     YamlManager getConfigManager();
 
+    void addAirDropHandler(Consumer<McInfPlayer> playerHandler);
+
     void gainKit(McInfPlayer player);
 
     void gainKit(Player target, String kit);
@@ -31,7 +34,7 @@ public interface McInfectedAPI {
 
     void removePreviousKit(Player player, boolean invClear);
 
-    Inventory getKitSelector(GamePlayer player, boolean human);
+    Inventory getKitSelector(boolean human);
 
 
 }

@@ -18,8 +18,8 @@ public class ChemWitchSkill implements InfectedSkill {
         List<GamePlayer> zombies = MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam).collect(Collectors.toList());
         zombies.forEach(g -> {
             Player player = g.getPlayer();
-            player.sendTitle("", "§e全體殭屍速度 +5%, 持續 10 秒", 10, 40, 10);
-            player.setWalkSpeed(0.3f);
+            player.sendTitle("", "§e全體殭屍速度 +20%, 持續 10 秒", 10, 40, 10);
+            player.setWalkSpeed(player.getWalkSpeed() * 1.2f);
             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 2, 0.9f);
         });
     }
@@ -27,7 +27,7 @@ public class ChemWitchSkill implements InfectedSkill {
     @Override
     public void revert(Player self) {
         List<GamePlayer> zombies = MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam).collect(Collectors.toList());
-        zombies.forEach(g -> g.getPlayer().setWalkSpeed(0.25f));
+        zombies.forEach(g -> g.getPlayer().setWalkSpeed(g.getPlayer().getWalkSpeed() * 0.83333f));
     }
 
     @Override

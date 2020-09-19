@@ -1,6 +1,5 @@
 package com.ericlam.mc.mcinfected.tasks;
 
-import com.ericlam.mc.mcinfected.config.InfConfig;
 import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
@@ -15,10 +14,6 @@ import com.ericlam.mc.minigames.core.manager.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -29,17 +24,7 @@ import java.util.stream.Collectors;
 
 public class GameTask extends InfTask {
 
-    public static StorageMinecart airdrop = null;
     static List<GamePlayer> alphasZombies = new ArrayList<>();
-    private boolean notifiedHunter = false;
-
-    public static boolean shouldHunterActivate(final List<GamePlayer> gamePlayers) {
-        if (gamePlayers.size() < 1) return false;
-        float hunterPercent = McInfected.getApi().getConfigManager().getConfigAs(InfConfig.class).game.hunterPercent;
-        List<GamePlayer> humans = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).collect(Collectors.toList());
-        int hunterSize = (int) Math.floor(gamePlayers.size() * hunterPercent);
-        return hunterSize >= humans.size();
-    }
 
     @Override
     public void initRun(PlayerManager playerManager) {
@@ -74,8 +59,7 @@ public class GameTask extends InfTask {
 
     @Override
     public void onFinish() {
-        if (airdrop != null) airdrop.remove();
-        this.notifiedHunter = false;
+        airDropManager.removeAirDrop();
     }
 
     @Override
@@ -94,37 +78,21 @@ public class GameTask extends InfTask {
                     });
         }
         int level = (int) l;
-        if (l == getTotalTime() / 2 && !notifiedHunter) {
+        if (l == getTotalTime() / 2 && !hunterManager.isNotified()) {
             Arena arena = MinigamesCore.getApi().getArenaManager().getFinalArena();
             List<Location> locations = arena.getWarp("airdrop");
-            Location randomLoc = locations.get(new Random().nextInt(locations.size()));
-            airdrop = (StorageMinecart) arena.getWorld().spawnEntity(randomLoc, EntityType.MINECART_CHEST);
-            airdrop.setCustomName("§e補救箱");
-            airdrop.setInvulnerable(true);
-            airdrop.setGlowing(true);
-            airdrop.setSlowWhenEmpty(true);
-            airdrop.setCustomNameVisible(true);
-            playerManager.getGamePlayer().stream().filter(t -> t.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).forEach(p -> {
-                p.getPlayer().sendTitle("", "§a補救箱已送達。", 0, 60, 20);
-                p.getPlayer().playSound(randomLoc, Sound.ENTITY_ENDERMAN_STARE, 50, 3);
-            });
-            MinigamesCore.getApi().getFireWorkManager().spawnFireWork(List.of(randomLoc));
+            airDropManager.spawnAirDrop(locations);
+            airDropManager.notifyAirDrop(playerManager.getGamePlayer().stream().filter(t -> t.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).collect(Collectors.toList()));
         }
         Bukkit.getOnlinePlayers().forEach(p -> p.setLevel(level));
         VotingTask.bossBar.setProgress((double) l / getTotalTime());
         VotingTask.updateBoard(l, playerManager.getGamePlayer(), "&c母體已出現");
-        if (shouldHunterActivate(playerManager.getGamePlayer()) && !notifiedHunter) {
-            VotingTask.hunterBossBar.setVisible(true);
+        if (hunterManager.shouldHunterActive()) {
             VotingTask.bossBar.setVisible(false);
-            VotingTask.updateHunterBossBar(playerManager.getGamePlayer());
-            playerManager.getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).forEach(g -> {
-                Player player = g.getPlayer();
-                player.setGlowing(true);
-                MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.hunter.get("Active").split(":"));
-                player.sendTitle("", "§a按 F 可以化身成幽靈獵手。", 0, 100, 0);
-            });
-            if (airdrop != null) airdrop.remove();
-            this.notifiedHunter = true;
+            hunterManager.setBarVisible(true);
+            hunterManager.updateHunterBossBar();
+            hunterManager.notifyHunters();
+            airDropManager.removeAirDrop();
         }
         return l;
     }

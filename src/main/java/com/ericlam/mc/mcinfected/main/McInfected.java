@@ -1,6 +1,5 @@
 package com.ericlam.mc.mcinfected.main;
 
-import com.ericlam.mc.mcinfected.Kit;
 import com.ericlam.mc.mcinfected.McInfListener;
 import com.ericlam.mc.mcinfected.api.McInfectedAPI;
 import com.ericlam.mc.mcinfected.commands.InfArenaCommand;
@@ -14,6 +13,8 @@ import com.ericlam.mc.mcinfected.implement.mechanic.McInfGameStatsMechanic;
 import com.ericlam.mc.mcinfected.implement.mechanic.McInfPlayerMechanic;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
+import com.ericlam.mc.mcinfected.manager.AirDropManager;
+import com.ericlam.mc.mcinfected.manager.HunterManager;
 import com.ericlam.mc.mcinfected.manager.KitManager;
 import com.ericlam.mc.mcinfected.manager.MiscManager;
 import com.ericlam.mc.mcinfected.skills.InfectedSkill;
@@ -33,38 +34,32 @@ import com.hypernite.mc.hnmc.core.builders.ItemStackBuilder;
 import com.hypernite.mc.hnmc.core.main.HyperNiteMC;
 import com.hypernite.mc.hnmc.core.managers.YamlManager;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public final class McInfected extends JavaPlugin implements Listener, McInfectedAPI {
 
     private static McInfectedAPI api;
-    private final Map<ItemStack, Consumer<InventoryClickEvent>> clickMap = new ConcurrentHashMap<>();
-    private final Map<GamePlayer, Inventory> zombieInv = new ConcurrentHashMap<>();
-    private final Map<GamePlayer, Inventory> humanInv = new ConcurrentHashMap<>();
+
     private final HumanTeam humanTeam = new HumanTeam();
     private final ZombieTeam zombieTeam = new ZombieTeam();
     private final InGameState preStartState = new InGameState("preStart", null);
-    private YamlManager configManager;
-    private LangConfig msg;
-    private KitManager kitManager;
     private final SkillManager skillManager = new SkillManager();
     private final InGameState gameEndState = new InGameState("gameEnd", null);
+
+    private YamlManager configManager;
+    private KitManager kitManager;
     private MiscManager miscManager;
+    private AirDropManager airDropManager;
+    private HunterManager hunterManager;
 
     public static McInfectedAPI getApi() {
         return api;
@@ -109,6 +104,11 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     }
 
     @Override
+    public void addAirDropHandler(Consumer<McInfPlayer> playerHandler) {
+        airDropManager.addAirDropHandler(playerHandler);
+    }
+
+    @Override
     public void gainKit(McInfPlayer player) {
         kitManager.gainKit(player);
     }
@@ -129,37 +129,17 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     }
 
     @Override
-    public Inventory getKitSelector(GamePlayer player, boolean human) {
-        Map<String, Kit> kits;
-        if (human) {
-            if (humanInv.containsKey(player)) return humanInv.get(player);
-            kits = kitManager.getKitMap().entrySet().stream().filter(e -> e.getValue().getDisguise() == EntityType.PLAYER).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        } else {
-            if (zombieInv.containsKey(player)) return zombieInv.get(player);
-            kits = kitManager.getKitMap().entrySet().stream().filter(e -> e.getValue().getDisguise() != EntityType.PLAYER).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        }
-        int row = (int) Math.ceil((double) kits.size() / 9);
-        InventoryBuilder builder = new InventoryBuilder(row == 0 ? 1 : row, "&9選擇職業");
-        kits.forEach((k, v) -> {
-            if (k.equals(configManager.getConfigAs(InfConfig.class).defaultKit.get("hunter"))) return;
-            ItemStack stack = new ItemStackBuilder(v.getIcon()).displayName(v.getDisplayName()).lore(v.getDescription()).build();
-            this.clickMap.put(stack, e -> {
-                e.setCancelled(true);
-                Player clicked = (Player) e.getWhoClicked();
-                MinigamesCore.getApi().getPlayerManager().findPlayer(clicked).ifPresent(player1 -> {
-                    McInfPlayer infPlayer = player1.castTo(McInfPlayer.class);
-                    if (human) infPlayer.setHumanKit(k);
-                    else infPlayer.setZombieKit(k);
-                    clicked.sendMessage(msg.get("Command.Kit.Chosen").replace("<team>", human ? "人類" : "生化幽靈").replace("<kit>", v.getDisplayName()));
-                });
+    public Inventory getKitSelector(boolean human) {
+        return kitManager.getKitSelector(human);
+    }
 
-            });
-            builder.item(stack);
-        });
-        Inventory inv = builder.build();
-        if (human) this.humanInv.put(player, inv);
-        else this.zombieInv.put(player, inv);
-        return inv;
+    public AirDropManager getAirDropManager() {
+        return airDropManager;
+    }
+
+
+    public HunterManager getHunterManager() {
+        return hunterManager;
     }
 
     @Override
@@ -173,12 +153,9 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
                 .register("kits.yml", KitConfig.class)
                 .register("lang.yml", LangConfig.class)
                 .dump();
-        msg = configManager.getConfigAs(LangConfig.class);
-        kitManager = new KitManager(configManager.getConfigAs(KitConfig.class));
-        kitManager.getKitMap().values().forEach(v -> {
-            v.getDescription().add(0, msg.getPure("Command.Kit.Choose").replace("<kit>", v.getDisplayName()));
-            v.getDescription().add(1, " ");
-        });
+        LangConfig msg = configManager.getConfigAs(LangConfig.class);
+        kitManager = new KitManager(configManager);
+        airDropManager = new AirDropManager();
         Compulsory com = MinigamesCore.getRegistration().getCompulsory();
         com.registerVoteGUI(new InventoryBuilder(1, "&c地圖投票"), 0, 2, 4, 6, 8);
         com.registerArenaMechanic(new McInfArenaMechanic());
@@ -193,12 +170,12 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         vol.addJoinItem(7, new ItemStackBuilder(Material.PLAYER_HEAD).displayName("&a選擇 人類 職業").onInteract(e -> {
             if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
             e.setCancelled(true);
-            MinigamesCore.getApi().getPlayerManager().findPlayer(e.getPlayer()).ifPresent(p -> e.getPlayer().openInventory(getKitSelector(p, true)));
+            MinigamesCore.getApi().getPlayerManager().findPlayer(e.getPlayer()).ifPresent(p -> e.getPlayer().openInventory(getKitSelector(true)));
         }).build());
         vol.addJoinItem(8, new ItemStackBuilder(Material.SKELETON_SKULL).displayName("&c選擇 生化幽靈 職業").onInteract(e -> {
             if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
             e.setCancelled(true);
-            MinigamesCore.getApi().getPlayerManager().findPlayer(e.getPlayer()).ifPresent(p -> e.getPlayer().openInventory(getKitSelector(p, false)));
+            MinigamesCore.getApi().getPlayerManager().findPlayer(e.getPlayer()).ifPresent(p -> e.getPlayer().openInventory(getKitSelector(false)));
         }).build());
         vol.registerGameTask(preStartState, new InfectingTask());
         vol.registerGameTask(new InGameState("gaming", null), new GameTask());
@@ -210,25 +187,19 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         skillManager.register("Exploder", new ExploderSkill());
         skillManager.register("Blocker", new BlockerSkill());
         skillManager.register("ChemWitch", new ChemWitchSkill());
-        getServer().getPluginManager().registerEvents(new McInfListener(infConfig, msg), this);
+        getServer().getPluginManager().registerEvents(new McInfListener(configManager, airDropManager, hunterManager), this);
         getServer().getPluginManager().registerEvents(this, this);
     }
 
 
     @Override
     public void onDisable() {
-        if (GameTask.airdrop != null) GameTask.airdrop.remove(); //防止突然關服忘了清理空投
+        airDropManager.removeAirDrop(); //防止突然關服忘了清理空投
     }
 
     @EventHandler
     public void onGameVoting(GameVotingEvent e) {
-        getServer().getPluginManager().registerEvents(new SkillListener(skillManager, configManager.getConfigAs(InfConfig.class)), this);
-    }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getCurrentItem() == null) return;
-        Optional.ofNullable(clickMap.get(e.getCurrentItem())).ifPresent(ex -> ex.accept(e));
+        getServer().getPluginManager().registerEvents(new SkillListener(skillManager, configManager.getConfigAs(InfConfig.class), hunterManager), this);
     }
 
     @EventHandler
@@ -240,10 +211,10 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         GamePlayer gamePlayer = gamePlayerOptional.get();
         if (e.getMessage().startsWith("/human")) {
             e.setCancelled(true);
-            e.getPlayer().openInventory(getKitSelector(gamePlayer, true));
+            e.getPlayer().openInventory(getKitSelector(true));
         } else if (e.getMessage().startsWith("/zombie")) {
             e.setCancelled(true);
-            e.getPlayer().openInventory(getKitSelector(gamePlayer, false));
+            e.getPlayer().openInventory(getKitSelector(false));
         }
     }
 }

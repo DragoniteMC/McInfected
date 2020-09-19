@@ -7,7 +7,7 @@ public class SpeederSkill implements InfectedSkill {
 
     @Override
     public void execute(Player self) {
-        self.setWalkSpeed(0.35f);
+        self.setWalkSpeed(self.getWalkSpeed() * 1.4f);
     }
 
     @Override
