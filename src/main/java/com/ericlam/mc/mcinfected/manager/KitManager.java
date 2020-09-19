@@ -35,7 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class KitManager {
-    private final Map<String, Kit> kitMap = new LinkedHashMap<>();
     private final Map<String, Kit> humanKitMap = new HashMap<>();
     private final Map<String, Kit> zombieKitMap = new HashMap<>();
     private final Map<OfflinePlayer, String> currentKit = new ConcurrentHashMap<>();
@@ -151,21 +150,25 @@ public class KitManager {
     }
 
     public void gainKit(Player target, String kit) {
-        Kit infKit = kitMap.get(kit);
-        if (infKit == null) {
-            McInfected.getProvidingPlugin(McInfected.class).getLogger().warning("There are no ".concat(kit).concat(" in kitMap"));
+        var kitMap = new HashMap<>(humanKitMap);
+        kitMap.putAll(zombieKitMap);
+        Kit mcinfKit = kitMap.get(kit);
+        if (mcinfKit == null) {
+            var warning = "There are no ".concat(kit).concat(" in kitMap");
+            target.sendMessage(warning);
+            McInfected.getProvidingPlugin(McInfected.class).getLogger().warning(warning);
             return;
         }
         PlayerInventory playerInventory = target.getInventory();
         //clear previous
         removeLastKit(target, true);
         //insert current
-        playerInventory.setArmorContents(infKit.getArmors());
-        playerInventory.addItem(infKit.getInventory());
-        target.addPotionEffects(infKit.getPotionEffects());
+        playerInventory.setArmorContents(mcinfKit.getArmors());
+        playerInventory.addItem(mcinfKit.getInventory());
+        target.addPotionEffects(mcinfKit.getPotionEffects());
         this.currentKit.put(target, kit);
-        if (infKit.getDisguise() == EntityType.PLAYER) return;
-        Disguise disguise = new MobDisguise(DisguiseType.getType(infKit.getDisguise()));
+        if (mcinfKit.getDisguise() == EntityType.PLAYER) return;
+        Disguise disguise = new MobDisguise(DisguiseType.getType(mcinfKit.getDisguise()));
         DisguiseAPI.setViewDisguiseToggled(target, false);
         DisguiseAPI.disguiseToAll(target, disguise);
     }

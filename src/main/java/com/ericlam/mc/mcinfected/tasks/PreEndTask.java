@@ -16,7 +16,7 @@ public class PreEndTask extends InfTask {
     @Override
     public void initRun(PlayerManager playerManager) {
         VotingTask.tracker.destroy();
-        CircularIterator<BarColor> colors = new CircularIterator<>(List.of(BarColor.GREEN, BarColor.RED, BarColor.YELLOW, BarColor.PINK, BarColor.PURPLE));
+        CircularIterator<BarColor> colors = new CircularIterator<>(List.of(BarColor.values()));
         new BukkitRunnable() {
             @Override
             public void run() {
