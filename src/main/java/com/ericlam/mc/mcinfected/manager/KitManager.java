@@ -40,7 +40,7 @@ public class KitManager {
     private final Map<OfflinePlayer, String> currentKit = new ConcurrentHashMap<>();
     private final YamlManager configManager;
     private Inventory humanKitSelector;
-    private final CSUtility csUtility = API.cs();
+    private final CSUtility csUtility = API.getCSUtility();
     private Inventory zombieKitSelector;
 
     public KitManager(YamlManager configManager) {

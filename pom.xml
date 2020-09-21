@@ -3,7 +3,7 @@
 
     <groupId>com.ericlam.mc</groupId>
     <artifactId>McInfected</artifactId>
-    <version>0.1.14</version>
+    <version>0.1.15</version>
 
     <repositories>
         <repository>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>other</groupId>
             <artifactId>crackshotplus</artifactId>
-            <version>1.88</version>
+            <version>1.95</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
