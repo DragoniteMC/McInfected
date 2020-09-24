@@ -11,8 +11,8 @@
             <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>xuan</id>
-            <url>https://xuan.nctu.me:8081/repository/Maven/</url>
+            <id>hypernite</id>
+            <url>https://nexus.chu77.xyz/repository/developer/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.hypernite.mc</groupId>
             <artifactId>core-api</artifactId>
-            <version>7.6.3</version>
+            <version>7.6.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -69,21 +69,21 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>other</groupId>
+            <groupId>org.spigotmc</groupId>
             <artifactId>crackshot</artifactId>
             <version>0.89.9</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>other</groupId>
+            <groupId>org.spigotmc</groupId>
             <artifactId>crackshotplus</artifactId>
             <version>1.95</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.ericlam.mc</groupId>
-            <artifactId>customcsweapons</artifactId>
-            <version>1.5.10</version>
+            <artifactId>custom-csweapon</artifactId>
+            <version>1.5.13</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
