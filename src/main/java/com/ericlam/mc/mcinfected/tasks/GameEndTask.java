@@ -1,5 +1,6 @@
 package com.ericlam.mc.mcinfected.tasks;
 
+import com.ericlam.mc.eld.ELDependenci;
 import com.ericlam.mc.mcinfected.implement.McInfGameStats;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.mcinfected.implement.team.ZombieTeam;
@@ -13,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.entity.Player;
+import org.dragonitemc.dragoneconomy.api.AsyncEconomyService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,8 @@ public class GameEndTask extends InfTask {
     private static int humanWins = 0;
     private static int zombieWins = 0;
     private int currentRound = 0;
+
+    private AsyncEconomyService economyService = ELDependenci.getApi().exposeService(AsyncEconomyService.class);
 
     public static String getTeamScore() {
         String zombieWin = ChatColor.RED.toString() + ChatColor.BOLD.toString() + GameEndTask.zombieWins + ChatColor.RESET.toString();
@@ -55,7 +59,10 @@ public class GameEndTask extends InfTask {
         if (zombieWin) {
             zombieWins++;
             VotingTask.bossBar.setColor(BarColor.RED);
-            GameTask.alphasZombies.forEach(p -> MinigamesCore.getApi().getGameStatsManager().addWins(p, 1));
+            GameTask.alphasZombies.forEach(p -> {
+                MinigamesCore.getApi().getGameStatsManager().addWins(p, 1);
+                economyService.depositPlayer(p.getPlayer().getUniqueId(), infConfig.price.zombie).thenRunSync(updateResult -> p.getPlayer().sendMessage("給錢錢，金額: " + infConfig.price.zombie));
+            });
             playerManager.getTotalPlayers().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam && !GameTask.alphasZombies.contains(g))
                     .forEach(GameEndTask::addLose);
         } else {
@@ -64,6 +71,7 @@ public class GameEndTask extends InfTask {
                 player.setGlowing(true);
                 MinigamesCore.getApi().getFireWorkManager().spawnFireWork(player);
                 MinigamesCore.getApi().getGameStatsManager().addWins(p, 1);
+                economyService.depositPlayer(p.getPlayer().getUniqueId(), infConfig.price.human).thenRunSync(updateResult -> p.getPlayer().sendMessage("給錢錢，金額: " + infConfig.price.human));
             });
             GameTask.alphasZombies.forEach(GameEndTask::addLose);
             humanWins++;

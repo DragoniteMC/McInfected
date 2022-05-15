@@ -6,6 +6,7 @@ depend:
   - Minigames-Core
   - LibsDisguises
   - CustomCSWeapon
+  - DragonEconomy
 softdepend:
   - MinigameMiscs
 commands:

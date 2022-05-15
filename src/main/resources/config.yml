@@ -14,6 +14,10 @@ defaultKit:
   zombie: Speeder
   hunter: Hunter
 
+price:
+  human: 100
+  zombie: 100
+
 damageMultiplier: 0.3
 
 fallbackServer: inflobby

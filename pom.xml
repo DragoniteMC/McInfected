@@ -3,7 +3,7 @@
 
     <groupId>com.ericlam.mc</groupId>
     <artifactId>McInfected</artifactId>
-    <version>0.1.17</version>
+    <version>0.1.18</version>
 
     <repositories>
         <repository>
@@ -21,6 +21,10 @@
         <repository>
             <id>md_5-public</id>
             <url>https://repo.md-5.net/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/ELDependenci/eldependenci</url>
         </repository>
     </repositories>
 
@@ -84,6 +88,17 @@
             <groupId>com.ericlam.mc</groupId>
             <artifactId>custom-csweapon</artifactId>
             <version>1.5.13</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.dragonite.mc</groupId>
+            <artifactId>DragonEconomy</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eldependenci</groupId>
+            <artifactId>eldependenci-framework</artifactId>
+            <version>0.1.7</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

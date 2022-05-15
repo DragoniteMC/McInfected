@@ -10,6 +10,7 @@ import java.util.Map;
 public class InfConfig extends Configuration {
 
     public Time gameTime;
+    public Price price;
     public Location lobby;
     public Game game;
     public Map<String, String> defaultKit;
@@ -22,6 +23,11 @@ public class InfConfig extends Configuration {
         public long game;
         public long infecting;
         public long voting;
+    }
+
+    public static class Price {
+        public double human;
+        public double zombie;
     }
 
     public static class Game {
