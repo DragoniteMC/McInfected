@@ -61,7 +61,7 @@ public class GameEndTask extends InfTask {
             VotingTask.bossBar.setColor(BarColor.RED);
             GameTask.alphasZombies.forEach(p -> {
                 MinigamesCore.getApi().getGameStatsManager().addWins(p, 1);
-                economyService.depositPlayer(p.getPlayer().getUniqueId(), infConfig.price.zombie).thenRunSync(updateResult -> p.getPlayer().sendMessage("給錢錢，金額: " + infConfig.price.zombie));
+                economyService.depositPlayer(p.getPlayer().getUniqueId(), infConfig.price.zombie).thenRunSync(updateResult -> p.getPlayer().sendMessage("給錢錢，金額: " + infConfig.price.zombie)).join();
             });
             playerManager.getTotalPlayers().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam && !GameTask.alphasZombies.contains(g))
                     .forEach(GameEndTask::addLose);
@@ -71,7 +71,7 @@ public class GameEndTask extends InfTask {
                 player.setGlowing(true);
                 MinigamesCore.getApi().getFireWorkManager().spawnFireWork(player);
                 MinigamesCore.getApi().getGameStatsManager().addWins(p, 1);
-                economyService.depositPlayer(p.getPlayer().getUniqueId(), infConfig.price.human).thenRunSync(updateResult -> p.getPlayer().sendMessage("給錢錢，金額: " + infConfig.price.human));
+                economyService.depositPlayer(p.getPlayer().getUniqueId(), infConfig.price.human).thenRunSync(updateResult -> p.getPlayer().sendMessage("給錢錢，金額: " + infConfig.price.human)).join();
             });
             GameTask.alphasZombies.forEach(GameEndTask::addLose);
             humanWins++;

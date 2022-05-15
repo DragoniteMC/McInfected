@@ -56,7 +56,7 @@ public class KitManager {
 
     public Inventory getKitSelector(boolean human) {
         if (human && humanKitSelector != null) return humanKitSelector;
-        else if (zombieKitSelector != null) return zombieKitSelector;
+        else if (!human && zombieKitSelector != null) return zombieKitSelector;
         var kits = human ? humanKitMap : zombieKitMap;
         var msg = configManager.getConfigAs(LangConfig.class);
         int row = (int) Math.ceil((double) kits.size() / 9);
