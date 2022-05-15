@@ -9,8 +9,7 @@ import com.ericlam.mc.mcinfected.tasks.BossbarUpdateRunnable;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
-import com.ericlam.mc.minigames.core.manager.PlayerManager;
-import com.hypernite.mc.hnmc.core.managers.YamlManager;
+import com.dragonite.mc.dnmc.core.managers.YamlManager;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 public class HunterManager {
 
     private static BossBar hunterBossBar;
-    private final PlayerManager playerManager;
     private final InfConfig infConfig;
     private final LangConfig msg;
     private boolean notified;
@@ -33,7 +31,6 @@ public class HunterManager {
     public HunterManager(YamlManager yamlManager) {
         this.infConfig = yamlManager.getConfigAs(InfConfig.class);
         this.msg = yamlManager.getConfigAs(LangConfig.class);
-        this.playerManager = MinigamesCore.getApi().getPlayerManager();
     }
 
     public static void addPlayer(GamePlayer player) {
@@ -57,7 +54,7 @@ public class HunterManager {
 
     public boolean shouldHunterActive() {
         if (notified) return false;
-        var gamePlayers = playerManager.getGamePlayer();
+        var gamePlayers = MinigamesCore.getApi().getPlayerManager().getGamePlayer();
         if (gamePlayers.size() < 1) return false;
         float hunterPercent = infConfig.game.hunterPercent;
         List<GamePlayer> humans = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).collect(Collectors.toList());
@@ -66,7 +63,7 @@ public class HunterManager {
     }
 
     public void notifyHunters() {
-        playerManager.getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).collect(Collectors.toList()).forEach(g -> {
+        MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).collect(Collectors.toList()).forEach(g -> {
             Player player = g.getPlayer();
             player.setGlowing(true);
             MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.hunter.get("Active").split(":"));
@@ -80,7 +77,7 @@ public class HunterManager {
     }
 
     public void updateHunterBossBar() {
-        var gamePlayers = playerManager.getGamePlayer();
+        var gamePlayers = MinigamesCore.getApi().getPlayerManager().getGamePlayer();
         long humans = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).count();
         long zombies = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam).count();
         String tit = McInfected.getApi().getConfigManager().getConfigAs(LangConfig.class).getPure("Picture.Bar.Hunter");
@@ -91,7 +88,7 @@ public class HunterManager {
 
     public void activateHunter(Player player) {
         if (!shouldHunterActive()) return;
-        playerManager.findPlayer(player).ifPresent(g -> {
+        MinigamesCore.getApi().getPlayerManager().findPlayer(player).ifPresent(g -> {
             String hunterKit = infConfig.defaultKit.get("hunter");
             String using = McInfected.getApi().currentKit(g.getPlayer());
             if (using != null && using.equals(hunterKit)) return;

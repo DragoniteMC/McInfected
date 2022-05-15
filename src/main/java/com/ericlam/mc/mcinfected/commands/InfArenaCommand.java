@@ -1,7 +1,7 @@
 package com.ericlam.mc.mcinfected.commands;
 
-import com.hypernite.mc.hnmc.core.misc.commands.DefaultCommand;
-import com.hypernite.mc.hnmc.core.misc.permission.Perm;
+import com.dragonite.mc.dnmc.core.misc.commands.DefaultCommand;
+import com.dragonite.mc.dnmc.core.misc.permission.Perm;
 
 public class InfArenaCommand extends DefaultCommand {
 

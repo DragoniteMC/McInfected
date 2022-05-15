@@ -1,5 +1,6 @@
 package com.ericlam.mc.mcinfected.implement;
 
+import com.ericlam.mc.minigames.core.gamestats.GameStats;
 import com.ericlam.mc.minigames.core.gamestats.GameStatsEditor;
 
 public class McInfGameStats implements GameStatsEditor {
@@ -102,5 +103,15 @@ public class McInfGameStats implements GameStatsEditor {
                 "§e失敗數: §f" + loses,
                 "§e感染數: §f" + infected
         };
+    }
+
+    @Override
+    public GameStats clone() {
+        return null;
+    }
+
+    @Override
+    public GameStats minus(GameStats gameStats) {
+        return null;
     }
 }

@@ -4,16 +4,13 @@ import com.ericlam.mc.mcinfected.implement.McInfGameStats;
 import com.ericlam.mc.minigames.core.gamestats.GameStats;
 import com.ericlam.mc.minigames.core.gamestats.GameStatsEditor;
 import com.ericlam.mc.minigames.core.gamestats.GameStatsHandler;
-import com.hypernite.mc.hnmc.core.main.HyperNiteMC;
-import com.hypernite.mc.hnmc.core.managers.SQLDataSource;
+import com.dragonite.mc.dnmc.core.main.DragoniteMC;
+import com.dragonite.mc.dnmc.core.managers.SQLDataSource;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -26,7 +23,7 @@ public class McInfGameStatsMechanic implements GameStatsHandler {
     private final String saveStatement = "INSERT INTO `McInfected_stats` VALUES (?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `name`=?, `kills`=?, `deaths`=?, `wins`=?, `played`=?, `infected`=?, `loses`=?, `scores`=?";
 
     public McInfGameStatsMechanic() {
-        this.sqlDataSource = HyperNiteMC.getAPI().getSQLDataSource();
+        this.sqlDataSource = DragoniteMC.getAPI().getSQLDataSource();
         CompletableFuture.runAsync(() -> {
             try (Connection connection = sqlDataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(createTableStatement)) {
                 statement.execute();
@@ -87,6 +84,16 @@ public class McInfGameStatsMechanic implements GameStatsHandler {
             }
 
         });
+    }
+
+    @Override
+    public CompletableFuture<Void> saveGameStatsRecord(OfflinePlayer offlinePlayer, GameStats gameStats, Timestamp timestamp) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> saveGameStatsRecord(Map<OfflinePlayer, GameStats> map, Map<OfflinePlayer, Timestamp> map1) {
+        return null;
     }
 
     private void statement(PreparedStatement statement, OfflinePlayer offlinePlayer, McInfGameStats game) throws SQLException {

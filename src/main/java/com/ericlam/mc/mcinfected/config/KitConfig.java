@@ -1,7 +1,7 @@
 package com.ericlam.mc.mcinfected.config;
 
-import com.hypernite.mc.hnmc.core.config.yaml.Configuration;
-import com.hypernite.mc.hnmc.core.config.yaml.Resource;
+import com.dragonite.mc.dnmc.core.config.yaml.Configuration;
+import com.dragonite.mc.dnmc.core.config.yaml.Resource;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 

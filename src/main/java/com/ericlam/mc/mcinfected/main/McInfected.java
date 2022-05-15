@@ -29,10 +29,10 @@ import com.ericlam.mc.minigames.core.game.InGameState;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.registable.Compulsory;
 import com.ericlam.mc.minigames.core.registable.Voluntary;
-import com.hypernite.mc.hnmc.core.builders.InventoryBuilder;
-import com.hypernite.mc.hnmc.core.builders.ItemStackBuilder;
-import com.hypernite.mc.hnmc.core.main.HyperNiteMC;
-import com.hypernite.mc.hnmc.core.managers.YamlManager;
+import com.dragonite.mc.dnmc.core.builders.InventoryBuilder;
+import com.dragonite.mc.dnmc.core.builders.ItemStackBuilder;
+import com.dragonite.mc.dnmc.core.main.DragoniteMC;
+import com.dragonite.mc.dnmc.core.managers.YamlManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -150,7 +150,7 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
         if (getServer().getPluginManager().isPluginEnabled("MinigameMiscs")) {
             this.miscManager = new MiscManager();
         }
-        configManager = HyperNiteMC.getAPI().getFactory().getConfigFactory(this)
+        configManager = DragoniteMC.getAPI().getFactory().getConfigFactory(this)
                 .register("config.yml", InfConfig.class)
                 .register("kits.yml", KitConfig.class)
                 .register("lang.yml", LangConfig.class)
