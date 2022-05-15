@@ -5,6 +5,7 @@ Command:
   Kit:
     Choose: '&a選擇<kit>'
     Chosen: '&a你選擇了在&7<team>&a狀態時使用&7<kit>'
+    Locked: "&c尚未解鎖 <kit>"
 Error:
   Command:
     countdown-cancel: "&c人數不足，已取消倒數。"

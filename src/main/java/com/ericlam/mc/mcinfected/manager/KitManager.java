@@ -70,6 +70,10 @@ public class KitManager {
                     .onClick(e -> {
                         e.setCancelled(true);
                         Player clicked = (Player) e.getWhoClicked();
+                        if (v.getPermission() != null && !clicked.hasPermission(v.getPermission())) {
+                            clicked.sendMessage(msg.get("Command.Kit.Locked").replace("<kit>", v.getDisplayName()));
+                            return;
+                        }
                         MinigamesCore.getApi().getPlayerManager().findPlayer(clicked).ifPresent(player1 -> {
                             McInfPlayer infPlayer = player1.castTo(McInfPlayer.class);
                             if (human) infPlayer.setHumanKit(k);
@@ -128,7 +132,14 @@ public class KitManager {
                 int amp = Integer.parseInt(s[2]);
                 return new PotionEffect(type, dur * 20, amp, false, false);
             }).filter(Objects::nonNull).collect(Collectors.toList());
-            Kit kits = new Kit(display == null ? kitName : ChatColor.translateAlternateColorCodes('&', display), armors, stacks.toArray(ItemStack[]::new), description, iconItem, potionsEffect);
+            Kit kits = new Kit(display == null ? kitName : ChatColor.translateAlternateColorCodes('&', display),
+                    armors,
+                    stacks.toArray(ItemStack[]::new),
+                    description,
+                    iconItem,
+                    potionsEffect,
+                    kit.permission
+            );
             if (disguise != null) {
                 try {
                     kits.setDisguise(disguise);

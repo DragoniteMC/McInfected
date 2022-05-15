@@ -107,11 +107,25 @@ public class McInfGameStats implements GameStatsEditor {
 
     @Override
     public GameStats clone() {
-        return null;
+         try {
+             return (GameStats) super.clone();
+         }catch (CloneNotSupportedException e){
+             System.out.printf("Clone not supported: %s", e.getMessage());
+             return new McInfGameStats(kills, deaths, played, wins, loses, infected, scores);
+         }
     }
 
     @Override
-    public GameStats minus(GameStats gameStats) {
-        return null;
+    public GameStats minus(GameStats s) {
+        var gameStats = s.castTo(McInfGameStats.class);
+        var log = (McInfGameStats) this.clone();
+        log.setDeaths(this.getDeaths() - gameStats.getDeaths());
+        log.setKills(this.getKills() - gameStats.getKills());
+        log.setPlayed(this.getPlayed() - gameStats.getPlayed());
+        log.setWins(this.getWins() - gameStats.getWins());
+        log.setLoses(this.getLoses() - gameStats.getLoses());
+        log.setInfected(this.getInfected() - gameStats.getInfected());
+        log.setScores(this.getScores() - gameStats.getScores());
+        return log;
     }
 }

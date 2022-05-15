@@ -21,6 +21,8 @@ public class KitConfig extends Configuration {
         public String Icon;
         public List<String> Potions;
         public EntityType Disguise;
+        
+        public String permission;
     }
 
     public static class Inventory {

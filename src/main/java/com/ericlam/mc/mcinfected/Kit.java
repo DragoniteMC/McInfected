@@ -5,20 +5,23 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Kit {
 
-    private String displayName;
-    private ItemStack[] armors;
-    private ItemStack[] inventory;
-    private List<String> description;
-    private ItemStack icon;
-    private List<PotionEffect> potionEffects;
+    private final String displayName;
+    private final ItemStack[] armors;
+    private final ItemStack[] inventory;
+    private final List<String> description;
+    private final ItemStack icon;
+    private final List<PotionEffect> potionEffects;
+
+    private final String permission;
     private EntityType disguise;
 
-    public Kit(String displayName, ItemStack[] armors, ItemStack[] inventory, List<String> description, ItemStack icon, List<PotionEffect> potionEffects) {
+    public Kit(String displayName, ItemStack[] armors, ItemStack[] inventory, List<String> description, ItemStack icon, List<PotionEffect> potionEffects, @Nullable String permission) {
         this.displayName = displayName;
         this.armors = armors;
         this.inventory = inventory;
@@ -26,6 +29,7 @@ public class Kit {
         this.icon = icon;
         this.potionEffects = potionEffects;
         this.disguise = EntityType.PLAYER;
+        this.permission = permission;
     }
 
     public String getDisplayName() {
@@ -58,5 +62,11 @@ public class Kit {
 
     public void setDisguise(EntityType disguise) {
         this.disguise = disguise;
+    }
+
+
+    @Nullable
+    public String getPermission() {
+        return permission;
     }
 }
