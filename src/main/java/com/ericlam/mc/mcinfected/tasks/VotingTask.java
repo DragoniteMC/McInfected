@@ -12,6 +12,8 @@ import com.ericlam.mc.minigames.core.factory.compass.CompassTracker;
 import com.ericlam.mc.minigames.core.factory.scoreboard.GameBoard;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
@@ -20,6 +22,7 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
+import java.time.Duration;
 import java.util.List;
 
 public class VotingTask extends InfTask {
@@ -60,7 +63,9 @@ public class VotingTask extends InfTask {
         playerManager.getWaitingPlayer().forEach(p -> {
             Player player = p.getPlayer();
             player.sendMessage(msg.get("Game.Start"));
-            player.sendTitle("", msg.getPure("Game.Start-Title"), 20, 60, 20);
+            Title.Times time = Title.Times.times(Duration.ofSeconds(20L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+            Title t = Title.title(Component.empty(), Component.text(msg.getPure("Game.Start-Title")), time);
+            player.showTitle(t);
         });
     }
 

@@ -1,5 +1,6 @@
 package com.ericlam.mc.mcinfected;
 
+import com.ericlam.mc.eld.ELDependenci;
 import com.ericlam.mc.mcinfected.api.McInfectedAPI;
 import com.ericlam.mc.mcinfected.config.InfConfig;
 import com.ericlam.mc.mcinfected.config.LangConfig;
@@ -30,6 +31,8 @@ import com.dragonite.mc.dnmc.core.managers.YamlManager;
 import com.dragonite.mc.dnmc.core.utils.Tools;
 import com.shampaggon.crackshot.events.WeaponDamageEntityEvent;
 import me.DeeCaaD.CrackShotPlus.API;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -46,8 +49,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.dragonitemc.dragoneconomy.api.AsyncEconomyService;
 
 import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -63,6 +68,8 @@ public class McInfListener implements Listener {
     private final HunterManager hunterManager;
     private double multiplier = 0.0;
 
+    private AsyncEconomyService economyService = ELDependenci.getApi().exposeService(AsyncEconomyService.class);
+
     public McInfListener(YamlManager yamlManager, AirDropManager airDropManager, HunterManager hunterManager) {
         this.infConfig = yamlManager.getConfigAs(InfConfig.class);
         this.msg = yamlManager.getConfigAs(LangConfig.class);
@@ -75,7 +82,9 @@ public class McInfListener implements Listener {
             Player player = infPlayer.getPlayer();
             McInfected.getApi().gainKit(player, kit);
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 2);
-            player.sendTitle("", "§a全體彈藥已補完", 0, 60, 20);
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+            Title t = Title.title(Component.empty(), Component.text("§a全體彈藥已補完"), time);
+            player.showTitle(t);
         }));
 
         airDropManager.addAirDropHandler(infPlayer -> {
@@ -85,7 +94,9 @@ public class McInfListener implements Listener {
             instance.setBaseValue(200.0);
             player.setHealth(instance.getBaseValue());
             player.setHealthScale(20.0);
-            player.sendTitle("", "§a獲得: 防化服", 0, 60, 20);
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+            Title t = Title.title(Component.empty(), Component.text("§a獲得: 防化服"), time);
+            player.showTitle(t);
         });
 
     }
@@ -166,7 +177,9 @@ public class McInfListener implements Listener {
     public void onGamePreEnd(GamePreEndEvent e) {
         GameTeam team = e.getWinnerTeam();
         String path = "Game.Over.Result.".concat(team == null ? "Draw" : team instanceof HumanTeam ? "Human" : "Infected");
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendTitle(GameEndTask.getTeamScore(), msg.getPure(path), 0, 180, 20));
+        Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(180L), Duration.ofSeconds(20L));
+        Title t = Title.title(Component.text(GameEndTask.getTeamScore()), Component.text(msg.getPure(path)), time);
+        Bukkit.getOnlinePlayers().forEach(p -> p.showTitle(t));
     }
 
     @EventHandler
@@ -204,9 +217,10 @@ public class McInfListener implements Listener {
             double health = g.getPlayer().getHealth() - e.getDamage();
             boolean oneChance = health < 100 && health > 0;
             if (antiVirusSuit && oneChance) {
-                g.getPlayer().sendTitle("", "§c你的防化服已失效", 0, 40, 20);
+                Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(40L), Duration.ofSeconds(20L));
+                g.getPlayer().showTitle(Title.title(Component.empty(), Component.text("§c你的防化服已失效"), time));
                 g.getPlayer().playSound(g.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1, 1);
-                e.getPlayer().sendTitle("", "§4§l☣ §4感染失敗", 0, 40, 20);
+                e.getPlayer().showTitle(Title.title(Component.empty(), Component.text("§4§l☣ §4感染失敗"), time));
                 e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_ANVIL_DESTROY, 1, 1);
             }
         });
@@ -227,7 +241,9 @@ public class McInfListener implements Listener {
                     if (API.getCSDirector().getBoolean(cs.getWeaponTitle() + ".Item_Information.Melee_Mode")) {
                         action = "Melee";
                         MinigamesCore.getApi().getPlayerManager().setSpectator(victim);
-                        player.sendTitle("", "§7你因被近身武器致死，無法復活。", 0, 60, 40);
+                        Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(40L));
+                        Title t = Title.title(Component.empty(), Component.text("§7你因被近身武器致死，無法復活。"), time);
+                        player.showTitle(t);
                     } else if (cs.getBullet() instanceof TNTPrimed) {
                         action = "Explosion";
                     } else if (cs.getBullet() instanceof Projectile) {
@@ -240,6 +256,8 @@ public class McInfListener implements Listener {
                 try {
                     McInfGameStats stats = MinigamesCore.getApi().getGameStatsManager().getGameStats(killer).castTo(McInfGameStats.class);
                     stats.setInfected(stats.getInfected() + 1);
+                    var price = infConfig.price.zombie;
+                    economyService.depositPlayer(killer.getPlayer().getUniqueId(), price).thenRunSync(updateResult -> killer.getPlayer().sendMessage("§6+" + price + " $WRLD (感染人類)")).join();
                     MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.infected.split(":"));
                 } catch (PlayerNotExistException ex) {
                     McInfected.getPlugin(McInfected.class).getLogger().log(Level.SEVERE, ex.getMessage());
@@ -283,8 +301,10 @@ public class McInfListener implements Listener {
             multiplier += infConfig.damageMultiplier;
             String showMulti = new DecimalFormat("##.##").format(multiplier * 100);
             String title = msg.getPure("Game.Damage-Indicator").replace("<value>", showMulti + "");
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(30L), Duration.ofSeconds(20L));
+            Title t = Title.title(Component.empty(), Component.text(title), time);
             MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).forEach(g -> {
-                g.getPlayer().sendTitle("", title, 0, 30, 20);
+                g.getPlayer().showTitle(t);
                 g.getPlayer().playSound(g.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             });
         }

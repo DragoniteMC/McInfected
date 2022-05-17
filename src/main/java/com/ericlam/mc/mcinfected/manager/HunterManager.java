@@ -10,6 +10,8 @@ import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.dragonite.mc.dnmc.core.managers.YamlManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
@@ -17,6 +19,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,7 +70,9 @@ public class HunterManager {
             Player player = g.getPlayer();
             player.setGlowing(true);
             MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.hunter.get("Active").split(":"));
-            player.sendTitle("", "§a按 F 可以化身成幽靈獵手。", 0, 100, 0);
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(100L), Duration.ofSeconds(0L));
+            Title t = Title.title(Component.empty(), Component.text("§a按 F 可以化身成幽靈獵手。"), time);
+            player.showTitle(t);
         });
         this.notified = true;
     }
@@ -94,7 +99,9 @@ public class HunterManager {
             if (using != null && using.equals(hunterKit)) return;
             McInfected.getApi().gainKit(g.getPlayer(), hunterKit);
             MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.hunter.get("Burn").split(":"));
-            player.sendTitle("", "§b已化身成幽靈獵手。", 0, 30, 0);
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(30L), Duration.ofSeconds(0L));
+            Title t = Title.title(Component.empty(), Component.text("§b已化身成幽靈獵手。"), time);
+            player.showTitle(t);
             player.setGlowing(true);
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> {
                 a.setBaseValue(2048);

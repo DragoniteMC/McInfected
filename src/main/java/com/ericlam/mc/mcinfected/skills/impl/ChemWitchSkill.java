@@ -5,9 +5,12 @@ import com.ericlam.mc.mcinfected.skills.InfectedSkill;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +21,9 @@ public class ChemWitchSkill implements InfectedSkill {
         List<GamePlayer> zombies = MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam).collect(Collectors.toList());
         zombies.forEach(g -> {
             Player player = g.getPlayer();
-            player.sendTitle("", "§e全體殭屍速度 +20%, 持續 10 秒", 10, 40, 10);
+            Title.Times time = Title.Times.times(Duration.ofSeconds(10L), Duration.ofSeconds(40L), Duration.ofSeconds(10L));
+            Title t = Title.title(Component.empty(), Component.text("§e全體殭屍速度 +20%, 持續 10 秒"), time);
+            player.showTitle(t);
             player.setWalkSpeed(player.getWalkSpeed() * 1.2f);
             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 2, 0.9f);
         });

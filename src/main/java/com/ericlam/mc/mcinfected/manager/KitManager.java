@@ -18,6 +18,8 @@ import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -30,6 +32,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import javax.annotation.Nullable;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -124,7 +127,7 @@ public class KitManager {
                 return stack;
             }).filter(Objects::nonNull).collect(Collectors.toList()));
             ItemStack[] armors = armor.size() == 0 ? null : armor.stream().map(s -> s == null ? Material.AIR : s).map(ItemStack::new).toArray(ItemStack[]::new);
-            ItemStack iconItem = Optional.ofNullable(CSPapi.updateItemStackFeaturesNonPlayer(icon, csUtility.generateWeapon(icon))).orElseGet(() -> new ItemStack(Material.valueOf(icon)));
+            ItemStack iconItem = Optional.ofNullable(csUtility.generateWeapon(icon)).map(w -> CSPapi.updateItemStackFeaturesNonPlayer(icon, w)).orElseGet(() -> new ItemStack(Material.valueOf(icon)));
             List<PotionEffect> potionsEffect = potions.stream().map(s -> s.split(":")).filter(s -> s.length >= 3).map(s -> {
                 PotionEffectType type = PotionEffectType.getByName(s[0]);
                 if (type == null) return null;
@@ -190,10 +193,14 @@ public class KitManager {
         var msg = McInfected.getApi().getConfigManager().getConfigAs(LangConfig.class);
         if (player.getTeam() instanceof HumanTeam) {
             player.getPlayer().sendMessage(msg.get("Picture.Human.To Win"));
-            player.getPlayer().sendTitle("", msg.getPure("Picture.Human.You"), 0, 60, 20);
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+            Title t = Title.title(Component.empty(), Component.text(msg.getPure("Picture.Human.You")), time);
+            player.getPlayer().showTitle(t);
         } else {
             player.getPlayer().sendMessage(msg.get("Picture.Infected.To Win"));
-            player.getPlayer().sendTitle("", msg.getPure("Picture.Infected.You"), 0, 60, 20);
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+            Title t = Title.title(Component.empty(), Component.text(msg.getPure("Picture.Infected.You")), time);
+            player.getPlayer().showTitle(t);
         }
     }
 

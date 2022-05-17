@@ -10,12 +10,15 @@ import com.ericlam.mc.minigames.core.character.TeamPlayer;
 import com.ericlam.mc.minigames.core.exception.gamestats.PlayerNotExistException;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.entity.Player;
 import org.dragonitemc.dragoneconomy.api.AsyncEconomyService;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,13 +58,14 @@ public class GameEndTask extends InfTask {
     public void initRun(PlayerManager playerManager) {
         boolean zombieWin = playerManager.getGamePlayer().stream().noneMatch(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam);
         String title = msg.getPure("Game.Over.".concat(zombieWin ? "Infected" : "Humans").concat(" Win"));
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendTitle(title, "", 20, 100, 20));
+        Title.Times time = Title.Times.times(Duration.ofSeconds(20L), Duration.ofSeconds(100L), Duration.ofSeconds(20L));
+        Title t = Title.title(Component.text(title), Component.empty(), time);
+        Bukkit.getOnlinePlayers().forEach(p -> p.showTitle(t));
         if (zombieWin) {
             zombieWins++;
             VotingTask.bossBar.setColor(BarColor.RED);
             GameTask.alphasZombies.forEach(p -> {
                 MinigamesCore.getApi().getGameStatsManager().addWins(p, 1);
-                economyService.depositPlayer(p.getPlayer().getUniqueId(), infConfig.price.zombie).thenRunSync(updateResult -> p.getPlayer().sendMessage("給錢錢，金額: " + infConfig.price.zombie)).join();
             });
             playerManager.getTotalPlayers().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam && !GameTask.alphasZombies.contains(g))
                     .forEach(GameEndTask::addLose);
@@ -71,7 +75,8 @@ public class GameEndTask extends InfTask {
                 player.setGlowing(true);
                 MinigamesCore.getApi().getFireWorkManager().spawnFireWork(player);
                 MinigamesCore.getApi().getGameStatsManager().addWins(p, 1);
-                economyService.depositPlayer(p.getPlayer().getUniqueId(), infConfig.price.human).thenRunSync(updateResult -> p.getPlayer().sendMessage("給錢錢，金額: " + infConfig.price.human)).join();
+                var price = infConfig.price.human;
+                economyService.depositPlayer(p.getPlayer().getUniqueId(), price).thenRunSync(updateResult -> p.getPlayer().sendMessage("§6+" + price + " $WRLD (成功存活)")).join();
             });
             GameTask.alphasZombies.forEach(GameEndTask::addLose);
             humanWins++;
@@ -94,8 +99,10 @@ public class GameEndTask extends InfTask {
         int matchPoint = (int) Math.ceil((double) maxRound / 2);
         if (matchPoint % 2 == 0) matchPoint++;
         String mpTitle = msg.getPure("Picture.Bar.Mp");
+        Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(40L), Duration.ofSeconds(20L));
+        Title t = Title.title(Component.empty(), Component.text(mpTitle), time);
         if (zombieWins == matchPoint - 1 || humanWins == matchPoint - 1) {
-            Bukkit.getOnlinePlayers().forEach(p -> p.sendTitle("", mpTitle, 0, 40, 20));
+            Bukkit.getOnlinePlayers().forEach(p -> p.showTitle(t));
         }
         VotingTask.bossBar.setTitle(msg.getPure("Picture.Bar.Title")
                 .replace("<z>", zombieWins + "")

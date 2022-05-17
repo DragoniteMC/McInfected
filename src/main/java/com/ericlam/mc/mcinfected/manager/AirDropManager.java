@@ -4,12 +4,15 @@ import com.ericlam.mc.mcinfected.implement.McInfPlayer;
 import com.ericlam.mc.mcinfected.implement.team.HumanTeam;
 import com.ericlam.mc.minigames.core.character.GamePlayer;
 import com.ericlam.mc.minigames.core.main.MinigamesCore;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -37,8 +40,10 @@ public class AirDropManager {
     public void notifyAirDrop(List<GamePlayer> gamePlayers) {
         if (airdrop == null) return;
         var loc = airdrop.getLocation();
+        Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+        Title t = Title.title(Component.empty(), Component.text("§a補救箱已送達。"), time);
         gamePlayers.forEach(p -> {
-            p.getPlayer().sendTitle("", "§a補救箱已送達。", 0, 60, 20);
+            p.getPlayer().showTitle(t);
             p.getPlayer().playSound(loc, Sound.ENTITY_ENDERMAN_STARE, 50, 3);
         });
         MinigamesCore.getApi().getFireWorkManager().spawnFireWork(List.of(loc));
