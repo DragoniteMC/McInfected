@@ -193,12 +193,12 @@ public class KitManager {
         var msg = McInfected.getApi().getConfigManager().getConfigAs(LangConfig.class);
         if (player.getTeam() instanceof HumanTeam) {
             player.getPlayer().sendMessage(msg.get("Picture.Human.To Win"));
-            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(1));
             Title t = Title.title(Component.empty(), Component.text(msg.getPure("Picture.Human.You")), time);
             player.getPlayer().showTitle(t);
         } else {
             player.getPlayer().sendMessage(msg.get("Picture.Infected.To Win"));
-            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(1));
             Title t = Title.title(Component.empty(), Component.text(msg.getPure("Picture.Infected.You")), time);
             player.getPlayer().showTitle(t);
         }

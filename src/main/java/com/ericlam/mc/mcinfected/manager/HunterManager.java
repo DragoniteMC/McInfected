@@ -70,7 +70,7 @@ public class HunterManager {
             Player player = g.getPlayer();
             player.setGlowing(true);
             MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.hunter.get("Active").split(":"));
-            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(100L), Duration.ofSeconds(0L));
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(5), Duration.ofSeconds(0));
             Title t = Title.title(Component.empty(), Component.text("§a按 F 可以化身成幽靈獵手。"), time);
             player.showTitle(t);
         });
@@ -99,7 +99,7 @@ public class HunterManager {
             if (using != null && using.equals(hunterKit)) return;
             McInfected.getApi().gainKit(g.getPlayer(), hunterKit);
             MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.hunter.get("Burn").split(":"));
-            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(30L), Duration.ofSeconds(0L));
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(1), Duration.ofSeconds(0));
             Title t = Title.title(Component.empty(), Component.text("§b已化身成幽靈獵手。"), time);
             player.showTitle(t);
             player.setGlowing(true);

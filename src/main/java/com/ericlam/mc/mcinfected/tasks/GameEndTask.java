@@ -58,7 +58,7 @@ public class GameEndTask extends InfTask {
     public void initRun(PlayerManager playerManager) {
         boolean zombieWin = playerManager.getGamePlayer().stream().noneMatch(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam);
         String title = msg.getPure("Game.Over.".concat(zombieWin ? "Infected" : "Humans").concat(" Win"));
-        Title.Times time = Title.Times.times(Duration.ofSeconds(20L), Duration.ofSeconds(100L), Duration.ofSeconds(20L));
+        Title.Times time = Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1));
         Title t = Title.title(Component.text(title), Component.empty(), time);
         Bukkit.getOnlinePlayers().forEach(p -> p.showTitle(t));
         if (zombieWin) {
@@ -75,8 +75,8 @@ public class GameEndTask extends InfTask {
                 player.setGlowing(true);
                 MinigamesCore.getApi().getFireWorkManager().spawnFireWork(player);
                 MinigamesCore.getApi().getGameStatsManager().addWins(p, 1);
-                var price = infConfig.price.human;
-                economyService.depositPlayer(p.getPlayer().getUniqueId(), price).thenRunSync(updateResult -> p.getPlayer().sendMessage("§6+" + price + " $WRLD (成功存活)")).join();
+                var reward = infConfig.reward.human;
+                economyService.depositPlayer(p.getPlayer().getUniqueId(), reward).thenRunSync(updateResult -> p.getPlayer().sendMessage("§6+" + reward + " $WRLD (成功存活)")).join();
             });
             GameTask.alphasZombies.forEach(GameEndTask::addLose);
             humanWins++;
@@ -99,7 +99,7 @@ public class GameEndTask extends InfTask {
         int matchPoint = (int) Math.ceil((double) maxRound / 2);
         if (matchPoint % 2 == 0) matchPoint++;
         String mpTitle = msg.getPure("Picture.Bar.Mp");
-        Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(40L), Duration.ofSeconds(20L));
+        Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(2), Duration.ofSeconds(1));
         Title t = Title.title(Component.empty(), Component.text(mpTitle), time);
         if (zombieWins == matchPoint - 1 || humanWins == matchPoint - 1) {
             Bukkit.getOnlinePlayers().forEach(p -> p.showTitle(t));

@@ -21,7 +21,7 @@ public class ChemWitchSkill implements InfectedSkill {
         List<GamePlayer> zombies = MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam).collect(Collectors.toList());
         zombies.forEach(g -> {
             Player player = g.getPlayer();
-            Title.Times time = Title.Times.times(Duration.ofSeconds(10L), Duration.ofSeconds(40L), Duration.ofSeconds(10L));
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(2), Duration.ofSeconds(0));
             Title t = Title.title(Component.empty(), Component.text("§e全體殭屍速度 +20%, 持續 10 秒"), time);
             player.showTitle(t);
             player.setWalkSpeed(player.getWalkSpeed() * 1.2f);

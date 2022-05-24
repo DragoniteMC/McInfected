@@ -14,9 +14,10 @@ defaultKit:
   zombie: Speeder
   hunter: Hunter
 
-price:
-  human: 100
-  zombie: 100
+reward:
+  human: 1
+  zombie: 1
+  knife: 1
 
 damageMultiplier: 0.3
 

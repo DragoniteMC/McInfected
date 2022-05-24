@@ -14,6 +14,8 @@ import com.ericlam.mc.minigames.core.main.MinigamesCore;
 import com.ericlam.mc.minigames.core.manager.PlayerManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
@@ -63,7 +65,7 @@ public class VotingTask extends InfTask {
         playerManager.getWaitingPlayer().forEach(p -> {
             Player player = p.getPlayer();
             player.sendMessage(msg.get("Game.Start"));
-            Title.Times time = Title.Times.times(Duration.ofSeconds(20L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+            Title.Times time = Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(3), Duration.ofSeconds(1));
             Title t = Title.title(Component.empty(), Component.text(msg.getPure("Game.Start-Title")), time);
             player.showTitle(t);
         });
@@ -105,7 +107,9 @@ public class VotingTask extends InfTask {
     public long run(long l) {
         if (l % 30 == 0 || l == 20 || (l <= 10 && l > 5)) {
             String time = MinigamesCore.getApi().getGameUtils().getTimeWithUnit(l - 5);
-            Bukkit.broadcastMessage(msg.get("Game.Time.Voting").replace("<time>", time));
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(msg.get("Game.Time.Voting").replace("<time>", time)));
+            });
             SoundUtils.playVoteSound(false);
         } else if (l == 5) {
             SoundUtils.playVoteSound(true);

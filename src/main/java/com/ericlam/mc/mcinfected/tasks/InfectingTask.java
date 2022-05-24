@@ -1,5 +1,6 @@
 package com.ericlam.mc.mcinfected.tasks;
 
+import com.dragonite.mc.dnmc.core.main.DragoniteMC;
 import com.ericlam.mc.csweapon.CustomCSWeapon;
 import com.ericlam.mc.mcinfected.main.SoundUtils;
 import com.ericlam.mc.mcinfected.manager.HunterManager;

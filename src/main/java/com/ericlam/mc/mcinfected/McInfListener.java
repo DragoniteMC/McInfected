@@ -34,6 +34,7 @@ import me.DeeCaaD.CrackShotPlus.API;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -82,7 +83,7 @@ public class McInfListener implements Listener {
             Player player = infPlayer.getPlayer();
             McInfected.getApi().gainKit(player, kit);
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 2);
-            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(1));
             Title t = Title.title(Component.empty(), Component.text("§a全體彈藥已補完"), time);
             player.showTitle(t);
         }));
@@ -94,7 +95,7 @@ public class McInfListener implements Listener {
             instance.setBaseValue(200.0);
             player.setHealth(instance.getBaseValue());
             player.setHealthScale(20.0);
-            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(1));
             Title t = Title.title(Component.empty(), Component.text("§a獲得: 防化服"), time);
             player.showTitle(t);
         });
@@ -177,7 +178,7 @@ public class McInfListener implements Listener {
     public void onGamePreEnd(GamePreEndEvent e) {
         GameTeam team = e.getWinnerTeam();
         String path = "Game.Over.Result.".concat(team == null ? "Draw" : team instanceof HumanTeam ? "Human" : "Infected");
-        Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(180L), Duration.ofSeconds(20L));
+        Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(9), Duration.ofSeconds(1));
         Title t = Title.title(Component.text(GameEndTask.getTeamScore()), Component.text(msg.getPure(path)), time);
         Bukkit.getOnlinePlayers().forEach(p -> p.showTitle(t));
     }
@@ -217,7 +218,7 @@ public class McInfListener implements Listener {
             double health = g.getPlayer().getHealth() - e.getDamage();
             boolean oneChance = health < 100 && health > 0;
             if (antiVirusSuit && oneChance) {
-                Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(40L), Duration.ofSeconds(20L));
+                Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(2), Duration.ofSeconds(0));
                 g.getPlayer().showTitle(Title.title(Component.empty(), Component.text("§c你的防化服已失效"), time));
                 g.getPlayer().playSound(g.getPlayer().getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1, 1);
                 e.getPlayer().showTitle(Title.title(Component.empty(), Component.text("§4§l☣ §4感染失敗"), time));
@@ -241,9 +242,11 @@ public class McInfListener implements Listener {
                     if (API.getCSDirector().getBoolean(cs.getWeaponTitle() + ".Item_Information.Melee_Mode")) {
                         action = "Melee";
                         MinigamesCore.getApi().getPlayerManager().setSpectator(victim);
-                        Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(40L));
+                        Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(2));
                         Title t = Title.title(Component.empty(), Component.text("§7你因被近身武器致死，無法復活。"), time);
                         player.showTitle(t);
+                        var reward = infConfig.reward.knife;
+                        economyService.depositPlayer(killer.getPlayer().getUniqueId(), reward).thenRunSync(updateResult -> killer.getPlayer().sendMessage("§6+" + reward + " $WRLD (擊殺殭屍)")).join();
                     } else if (cs.getBullet() instanceof TNTPrimed) {
                         action = "Explosion";
                     } else if (cs.getBullet() instanceof Projectile) {
@@ -256,8 +259,8 @@ public class McInfListener implements Listener {
                 try {
                     McInfGameStats stats = MinigamesCore.getApi().getGameStatsManager().getGameStats(killer).castTo(McInfGameStats.class);
                     stats.setInfected(stats.getInfected() + 1);
-                    var price = infConfig.price.zombie;
-                    economyService.depositPlayer(killer.getPlayer().getUniqueId(), price).thenRunSync(updateResult -> killer.getPlayer().sendMessage("§6+" + price + " $WRLD (感染人類)")).join();
+                    var reward = infConfig.reward.zombie;
+                    economyService.depositPlayer(killer.getPlayer().getUniqueId(), reward).thenRunSync(updateResult -> killer.getPlayer().sendMessage("§6+" + reward + " $WRLD (感染人類)")).join();
                     MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.infected.split(":"));
                 } catch (PlayerNotExistException ex) {
                     McInfected.getPlugin(McInfected.class).getLogger().log(Level.SEVERE, ex.getMessage());
@@ -275,13 +278,18 @@ public class McInfListener implements Listener {
                 hunterManager.updateHunterBossBar();
                 return;
             }
-            MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.respawn.split(":"));
-            Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> player.setHealth(a.getBaseValue()));
-            List<Location> respawn = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("zombie");
-            //McInfected.getApi().removePreviousKit(player, true);
-            player.teleportAsync(respawn.get(Tools.randomWithRange(0, respawn.size() - 1)));
-            //McInfected.getApi().gainKit(victim.castTo(McInfPlayer.class));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
+            player.setGameMode(GameMode.SPECTATOR);
+            player.sendMessage(msg.get("Game.Respawn"));
+            Bukkit.getScheduler().runTaskLater(McInfected.getPlugin(McInfected.class), () -> {
+                player.setGameMode(GameMode.ADVENTURE);
+                MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.respawn.split(":"));
+                Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> player.setHealth(a.getBaseValue()));
+                List<Location> respawn = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("zombie");
+                //McInfected.getApi().removePreviousKit(player, true);
+                player.teleportAsync(respawn.get(Tools.randomWithRange(0, respawn.size() - 1)));
+                //McInfected.getApi().gainKit(victim.castTo(McInfPlayer.class));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
+            }, 60L);
         } else if (victim.getTeam() instanceof HumanTeam) {
             McInfectedAPI api = McInfected.getApi();
             GameUtils utils = MinigamesCore.getApi().getGameUtils();
@@ -301,7 +309,7 @@ public class McInfListener implements Listener {
             multiplier += infConfig.damageMultiplier;
             String showMulti = new DecimalFormat("##.##").format(multiplier * 100);
             String title = msg.getPure("Game.Damage-Indicator").replace("<value>", showMulti + "");
-            Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(30L), Duration.ofSeconds(20L));
+            Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(1), Duration.ofSeconds(1));
             Title t = Title.title(Component.empty(), Component.text(title), time);
             MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).forEach(g -> {
                 g.getPlayer().showTitle(t);

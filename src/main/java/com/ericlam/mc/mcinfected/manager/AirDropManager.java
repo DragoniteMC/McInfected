@@ -40,7 +40,7 @@ public class AirDropManager {
     public void notifyAirDrop(List<GamePlayer> gamePlayers) {
         if (airdrop == null) return;
         var loc = airdrop.getLocation();
-        Title.Times time = Title.Times.times(Duration.ofSeconds(0L), Duration.ofSeconds(60L), Duration.ofSeconds(20L));
+        Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(1));
         Title t = Title.title(Component.empty(), Component.text("§a補救箱已送達。"), time);
         gamePlayers.forEach(p -> {
             p.getPlayer().showTitle(t);
