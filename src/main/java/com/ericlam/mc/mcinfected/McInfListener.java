@@ -247,6 +247,7 @@ public class McInfListener implements Listener {
                         player.showTitle(t);
                         var reward = infConfig.reward.knife;
                         economyService.depositPlayer(killer.getPlayer().getUniqueId(), reward).thenRunSync(updateResult -> killer.getPlayer().sendMessage("§6+" + reward + " $WRLD (擊殺殭屍)")).join();
+                        McInfected.getApi().addLeaderBoard(killer.getPlayer(), reward);
                     } else if (cs.getBullet() instanceof TNTPrimed) {
                         action = "Explosion";
                     } else if (cs.getBullet() instanceof Projectile) {
@@ -261,6 +262,7 @@ public class McInfListener implements Listener {
                     stats.setInfected(stats.getInfected() + 1);
                     var reward = infConfig.reward.zombie;
                     economyService.depositPlayer(killer.getPlayer().getUniqueId(), reward).thenRunSync(updateResult -> killer.getPlayer().sendMessage("§6+" + reward + " $WRLD (感染人類)")).join();
+                    McInfected.getApi().addLeaderBoard(killer.getPlayer(), reward);
                     MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.infected.split(":"));
                 } catch (PlayerNotExistException ex) {
                     McInfected.getPlugin(McInfected.class).getLogger().log(Level.SEVERE, ex.getMessage());
@@ -278,15 +280,15 @@ public class McInfListener implements Listener {
                 hunterManager.updateHunterBossBar();
                 return;
             }
-            player.setGameMode(GameMode.SPECTATOR);
+            MinigamesCore.getApi().getPlayerManager().setSpectator(victim);
             player.sendMessage(msg.get("Game.Respawn"));
             Bukkit.getScheduler().runTaskLater(McInfected.getPlugin(McInfected.class), () -> {
-                player.setGameMode(GameMode.ADVENTURE);
                 MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.respawn.split(":"));
                 Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> player.setHealth(a.getBaseValue()));
                 List<Location> respawn = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("zombie");
                 //McInfected.getApi().removePreviousKit(player, true);
                 player.teleportAsync(respawn.get(Tools.randomWithRange(0, respawn.size() - 1)));
+                MinigamesCore.getApi().getPlayerManager().setGamePlayer(victim);
                 //McInfected.getApi().gainKit(victim.castTo(McInfPlayer.class));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
             }, 60L);

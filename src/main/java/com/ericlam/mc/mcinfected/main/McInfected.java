@@ -42,7 +42,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 public final class McInfected extends JavaPlugin implements Listener, McInfectedAPI {
@@ -56,6 +56,8 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
 
     private final SkillManager skillManager = new SkillManager();
     private final AirDropManager airDropManager = new AirDropManager();
+
+    private final Map<UUID, Double> tops = new LinkedHashMap<>();
 
     private YamlManager configManager;
     private KitManager kitManager;
@@ -103,6 +105,21 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     @Override
     public YamlManager getConfigManager() {
         return configManager;
+    }
+
+    @Override
+    public void addLeaderBoard(Player player, double wrld) {
+        if (tops.containsKey(player.getUniqueId())) {
+            double oldwrld = tops.get(player.getUniqueId());
+            tops.put(player.getUniqueId(), oldwrld + wrld);
+            return;
+        }
+        tops.put(player.getUniqueId(), wrld);
+    }
+
+    @Override
+    public Map<UUID, Double> getLeaderBoard() {
+        return tops;
     }
 
     @Override
@@ -207,7 +224,7 @@ public final class McInfected extends JavaPlugin implements Listener, McInfected
     @EventHandler
     public void onCommandPreProcess(PlayerCommandPreprocessEvent e) {
         GameState state = MinigamesCore.getApi().getGameManager().getGameState();
-        if (state != GameState.PRESTART) return;
+        //if (state != GameState.PRESTART) return;
         Optional<GamePlayer> gamePlayerOptional = MinigamesCore.getApi().getPlayerManager().findPlayer(e.getPlayer());
         if (gamePlayerOptional.isEmpty()) return;
         GamePlayer gamePlayer = gamePlayerOptional.get();

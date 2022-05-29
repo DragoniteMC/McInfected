@@ -19,7 +19,10 @@ import org.bukkit.entity.Player;
 import org.dragonitemc.dragoneconomy.api.AsyncEconomyService;
 
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class GameEndTask extends InfTask {
@@ -38,6 +41,16 @@ public class GameEndTask extends InfTask {
 
     static void cancelGame(List<GamePlayer> gamePlayers) {
         McInfected inf = McInfected.getPlugin(McInfected.class);
+        AtomicInteger i = new AtomicInteger(1);
+        Bukkit.broadcastMessage(msg.get("LeaderBoard.Title"));
+        McInfected.getApi().getLeaderBoard().entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(4).forEachOrdered(top -> {
+            Player p;
+            try {
+                p = Bukkit.getPlayer(top.getKey());
+                Bukkit.broadcastMessage(msg.get("LeaderBoard.Place").replace("<place>", i.getAndIncrement() + "").replace("<player>", p.getName()).replace("<wrld>", top.getValue() + ""));
+            } catch (NullPointerException e) {
+            }
+        });
         MinigamesCore.getApi().getGameManager().endGame(gamePlayers, humanWins == zombieWins ? null : humanWins > zombieWins ? inf.getHumanTeam() : inf.getZombieTeam(), true);
     }
 
@@ -77,6 +90,7 @@ public class GameEndTask extends InfTask {
                 MinigamesCore.getApi().getGameStatsManager().addWins(p, 1);
                 var reward = infConfig.reward.human;
                 economyService.depositPlayer(p.getPlayer().getUniqueId(), reward).thenRunSync(updateResult -> p.getPlayer().sendMessage("§6+" + reward + " $WRLD (成功存活)")).join();
+                McInfected.getApi().addLeaderBoard(p.getPlayer(), reward);
             });
             GameTask.alphasZombies.forEach(GameEndTask::addLose);
             humanWins++;

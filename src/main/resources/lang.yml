@@ -58,3 +58,6 @@ Death Messages:
   Infected:
     Normal: '&c<killer> &4&l☣ &a<killed>&7'
   Self: '&f쾸 &c<killed>&7'
+LeaderBoard:
+  Title: '&3－－－－－ &b&l$WRLD &f排行榜 &3&l－－－－－'
+  Place: '&e<place> place &f- &6<player> &f- &b<wrld> $WRLD'

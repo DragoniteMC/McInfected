@@ -13,7 +13,7 @@ public abstract class InfTask implements SectionTask {
     protected PlayerManager playerManager;
     protected McInfected mcinf;
     protected InfConfig infConfig;
-    protected LangConfig msg;
+    protected static LangConfig msg;
     protected AirDropManager airDropManager;
     protected HunterManager hunterManager;
 

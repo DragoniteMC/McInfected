@@ -8,6 +8,8 @@ import com.dragonite.mc.dnmc.core.managers.YamlManager;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public interface McInfectedAPI {
@@ -35,6 +37,10 @@ public interface McInfectedAPI {
     void removePreviousKit(Player player, boolean invClear);
 
     Inventory getKitSelector(boolean human);
+
+    void addLeaderBoard(Player player, double wrld);
+
+    Map<UUID, Double> getLeaderBoard();
 
 
 }

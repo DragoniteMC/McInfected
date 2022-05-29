@@ -38,8 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class KitManager {
-    private final Map<String, Kit> humanKitMap = new HashMap<>();
-    private final Map<String, Kit> zombieKitMap = new HashMap<>();
+    private final Map<String, Kit> humanKitMap = new LinkedHashMap<>();
+    private final Map<String, Kit> zombieKitMap = new LinkedHashMap<>();
     private final Map<OfflinePlayer, String> currentKit = new ConcurrentHashMap<>();
     private final YamlManager configManager;
     private Inventory humanKitSelector;
