@@ -65,16 +65,15 @@ public class SkillListener implements Listener {
             Bukkit.getLogger().info("killer is not human");
             return;
         }
-        String using = api.currentKit(killer.getPlayer());
-        if (using == null) {
-            Bukkit.getLogger().info("killer using kit is null");
-            return;
+        if (!hunterManager.shouldHunterActive()) return;
+        boolean melee = false;
+        if (e instanceof CrackShotDeathEvent cs) {
+            melee = API.getCSDirector().getBoolean(cs.getWeaponTitle() + ".Item_Information.Melee_Mode");
         }
-        String hunterKit = infConfig.defaultKit.get("Hunter");
-        if (!using.equals(hunterKit)) {
-            Bukkit.getLogger().info("killer using kit is not hunter");
-            return;
+        if (melee) {
+            Bukkit.getOnlinePlayers().forEach(p -> gameUtils.playSound(p, infConfig.sounds.hunter.get("Kill").split(":")));
+        }else{
+            Bukkit.getLogger().info("killer using weapon is not melee");
         }
-        Bukkit.getOnlinePlayers().forEach(p -> gameUtils.playSound(p, infConfig.sounds.hunter.get("Kill").split(":")));
     }
 }

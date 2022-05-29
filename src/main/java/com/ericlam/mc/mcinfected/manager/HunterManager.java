@@ -70,7 +70,6 @@ public class HunterManager {
             Player player = g.getPlayer();
             Bukkit.getLogger().warning("notifying hunters: "+player.getName());
             player.setGlowing(true);
-            player.setGlowing(true);
             MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.hunter.get("Active").split(":"));
             Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(5), Duration.ofSeconds(0));
             Title t = Title.title(Component.empty(), Component.text("§a按 F 可以化身成幽靈獵手。"), time);
@@ -109,6 +108,7 @@ public class HunterManager {
             Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(1), Duration.ofSeconds(0));
             Title t = Title.title(Component.empty(), Component.text("§b已化身成幽靈獵手。"), time);
             player.showTitle(t);
+            player.setGlowing(true);
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> {
                 a.setBaseValue(2048);
                 player.setHealth(a.getBaseValue());
