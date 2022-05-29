@@ -19,4 +19,9 @@ public class HumanTeam implements GameTeam {
     public boolean isEnabledFriendlyFire() {
         return false;
     }
+
+    @Override
+    public boolean isEnabledFriendlyInvisibles() {
+        return false;
+    }
 }
