@@ -109,7 +109,7 @@ public class GameTask extends InfTask {
 
     @Override
     public boolean shouldCancel() {
-        boolean noone = playerManager.getGamePlayer().size() + getDeathGamer() < infConfig.game.autoStart;
+        boolean noone = playerManager.getGamePlayer().size() + getDeathGamer() < 2;
         boolean normalEnd = playerManager.getGamePlayer().stream().noneMatch(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam) || playerManager.getGamePlayer().stream().noneMatch(g -> g.castTo(TeamPlayer.class).getTeam() instanceof ZombieTeam);
         return noone || normalEnd;
     }

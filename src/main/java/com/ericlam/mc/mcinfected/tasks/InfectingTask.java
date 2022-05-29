@@ -67,6 +67,6 @@ public class InfectingTask extends InfTask {
 
     @Override
     public boolean shouldCancel() {
-        return playerManager.getGamePlayer().size() < infConfig.game.autoStart;
+        return playerManager.getGamePlayer().size() < 2;
     }
 }
