@@ -135,8 +135,6 @@ public class McInfListener implements Listener {
         if (MinigamesCore.getApi().getGameManager().getInGameState() == McInfected.getPlugin(McInfected.class).getGameEndState()) {
             Bukkit.getLogger().info("game end, cancelled");
             e.setCancelled(true);
-        }else if (MinigamesCore.getApi().getGameManager().getGameState() == GameState.IN_GAME){
-            e.setCancelled(false);
         }
     }
 
