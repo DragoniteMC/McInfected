@@ -280,7 +280,7 @@ public class McInfListener implements Listener {
                 hunterManager.updateHunterBossBar();
                 return;
             }
-            MinigamesCore.getApi().getPlayerManager().setSpectator(victim);
+            player.setGameMode(GameMode.SPECTATOR);
             player.sendMessage(msg.get("Game.Respawn"));
             Bukkit.getScheduler().runTaskLater(McInfected.getPlugin(McInfected.class), () -> {
                 MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.respawn.split(":"));
@@ -288,7 +288,7 @@ public class McInfListener implements Listener {
                 List<Location> respawn = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("zombie");
                 //McInfected.getApi().removePreviousKit(player, true);
                 player.teleportAsync(respawn.get(Tools.randomWithRange(0, respawn.size() - 1)));
-                MinigamesCore.getApi().getPlayerManager().setGamePlayer(victim);
+                player.setGameMode(GameMode.ADVENTURE);
                 //McInfected.getApi().gainKit(victim.castTo(McInfPlayer.class));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
             }, 60L);

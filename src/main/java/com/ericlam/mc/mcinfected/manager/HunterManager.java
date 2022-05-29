@@ -56,7 +56,8 @@ public class HunterManager {
     }
 
     public boolean shouldHunterActive() {
-        if (notified) return false;
+        //if (notified) return false;
+        Bukkit.getLogger().warning("notified:" + notified);
         var gamePlayers = MinigamesCore.getApi().getPlayerManager().getGamePlayer();
         if (gamePlayers.size() < 1) return false;
         float hunterPercent = infConfig.game.hunterPercent;
@@ -66,6 +67,7 @@ public class HunterManager {
     }
 
     public void notifyHunters() {
+        Bukkit.getLogger().warning("[McInfected] Hunter is active!");
         MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).collect(Collectors.toList()).forEach(g -> {
             Player player = g.getPlayer();
             player.setGlowing(true);
@@ -93,6 +95,7 @@ public class HunterManager {
 
     public void activateHunter(Player player) {
         if (!shouldHunterActive()) return;
+        Bukkit.getLogger().warning("Activate Hunter");
         MinigamesCore.getApi().getPlayerManager().findPlayer(player).ifPresent(g -> {
             String hunterKit = infConfig.defaultKit.get("hunter");
             String using = McInfected.getApi().currentKit(g.getPlayer());
