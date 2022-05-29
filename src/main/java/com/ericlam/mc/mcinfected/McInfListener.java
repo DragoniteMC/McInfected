@@ -253,8 +253,7 @@ public class McInfListener implements Listener {
             if (killer.getTeam() instanceof HumanTeam) {
                 MinigamesCore.getApi().getGameStatsManager().addKills(killer, 1);
                 action = "Other";
-                if (e instanceof CrackShotDeathEvent) {
-                    CrackShotDeathEvent cs = (CrackShotDeathEvent) e;
+                if (e instanceof CrackShotDeathEvent cs) {
                     if (API.getCSDirector().getBoolean(cs.getWeaponTitle() + ".Item_Information.Melee_Mode")) {
                         action = "Melee";
                         MinigamesCore.getApi().getPlayerManager().setSpectator(victim);

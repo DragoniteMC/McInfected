@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SkillManager {
 
     private final Map<String, InfectedSkill> kitSkillMap = new HashMap<>();
-    private final Map<Player, Boolean> cooldownMap = new ConcurrentHashMap<>();
+    private final Map<Player, SkillCooldownRunnable> cooldownMap = new ConcurrentHashMap<>();
     private final Map<Player, InfectedSkill> skillUsing = new HashMap<>();
 
     public void register(String kit, InfectedSkill skill) {
@@ -25,7 +25,7 @@ public class SkillManager {
         Map<String, String> soundSkill = McInfected.getApi().getConfigManager().getConfigAs(InfConfig.class).sounds.skill;
         String kit = McInfected.getApi().currentKit(player);
         if (kit == null) return;
-        boolean cooldown = cooldownMap.getOrDefault(player, false);
+        boolean cooldown = cooldownMap.containsKey(player);
         if (cooldown) return;
         InfectedSkill skill = this.kitSkillMap.get(kit);
         if (skill == null) return;
@@ -53,6 +53,10 @@ public class SkillManager {
             McInfected.getApi().removeSkillEffect(k);
         });
         skillUsing.clear();
+        cooldownMap.values().forEach(r -> {
+            if (!r.isCancelled()) r.cancel();
+        });
+        cooldownMap.clear();
     }
 
     boolean isUsingSkill(Player player) {

@@ -56,22 +56,25 @@ public class SkillListener implements Listener {
     @EventHandler
     public void onGamePlayerDeath(GamePlayerDeathEvent e) {
         McInfectedAPI api = McInfected.getApi();
-        if (e.getKiller() == null) return;
+        if (e.getKiller() == null) {
+            Bukkit.getLogger().info("killer is null");
+            return;
+        }
         GamePlayer killer = e.getKiller();
-        if (!(killer.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam)) return;
+        if (!(killer.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam)) {
+            Bukkit.getLogger().info("killer is not human");
+            return;
+        }
         String using = api.currentKit(killer.getPlayer());
-        if (using == null) return;
+        if (using == null) {
+            Bukkit.getLogger().info("killer using kit is null");
+            return;
+        }
         String hunterKit = infConfig.defaultKit.get("Hunter");
-        if (!using.equals(hunterKit)) return;
-        boolean melee = false;
-        if (e instanceof CrackShotDeathEvent) {
-            CrackShotDeathEvent cs = (CrackShotDeathEvent) e;
-            melee = API.getCSDirector().getBoolean(cs.getWeaponTitle() + ".Item_Information.Melee_Mode");
+        if (!using.equals(hunterKit)) {
+            Bukkit.getLogger().info("killer using kit is not hunter");
+            return;
         }
-        if (melee) {
-            Bukkit.getOnlinePlayers().forEach(p -> gameUtils.playSound(p, infConfig.sounds.hunter.get("Kill").split(":")));
-        }
-
-
+        Bukkit.getOnlinePlayers().forEach(p -> gameUtils.playSound(p, infConfig.sounds.hunter.get("Kill").split(":")));
     }
 }

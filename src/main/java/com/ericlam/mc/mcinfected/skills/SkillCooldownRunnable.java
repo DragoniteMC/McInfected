@@ -14,13 +14,13 @@ public class SkillCooldownRunnable extends BukkitRunnable {
 
     private final Player player;
     private double timer;
-    private final Map<Player, Boolean> cooldown;
+    private final Map<Player, SkillCooldownRunnable> cooldown;
 
-    public SkillCooldownRunnable(Player player, long timer, Map<Player, Boolean> cooldown) {
+    public SkillCooldownRunnable(Player player, long timer, Map<Player, SkillCooldownRunnable> cooldown) {
         this.player = player;
         this.timer = timer;
         this.cooldown = cooldown;
-        cooldown.put(player, true);
+        cooldown.put(player, this);
     }
 
     @Override
@@ -57,6 +57,6 @@ public class SkillCooldownRunnable extends BukkitRunnable {
     @Override
     public synchronized void cancel() throws IllegalStateException {
         super.cancel();
-        cooldown.put(player, false);
+        cooldown.remove(player);
     }
 }
