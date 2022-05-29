@@ -78,7 +78,7 @@ public class GameTask extends InfTask {
                     });
         }
         int level = (int) l;
-        if (l == getTotalTime() / 2 && !hunterManager.isNotified()) {
+        if (l == getTotalTime() / 2 && hunterManager.isNotNotified()) {
             Arena arena = MinigamesCore.getApi().getArenaManager().getFinalArena();
             List<Location> locations = arena.getWarp("airdrop");
             airDropManager.spawnAirDrop(locations);
@@ -87,7 +87,8 @@ public class GameTask extends InfTask {
         Bukkit.getOnlinePlayers().forEach(p -> p.setLevel(level));
         VotingTask.bossBar.setProgress((double) l / getTotalTime());
         VotingTask.updateBoard(l, playerManager.getGamePlayer(), "&c母體已出現");
-        if (hunterManager.shouldHunterActive() && !hunterManager.isNotified()) {
+        if (hunterManager.shouldHunterActive() && hunterManager.isNotNotified()) {
+            Bukkit.getLogger().info("hunter should active, notifying players");
             VotingTask.bossBar.setVisible(false);
             hunterManager.setBarVisible(true);
             hunterManager.updateHunterBossBar();

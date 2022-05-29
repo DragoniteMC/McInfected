@@ -22,7 +22,6 @@ import org.bukkit.entity.Player;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class HunterManager {
 
@@ -61,15 +60,15 @@ public class HunterManager {
         var gamePlayers = MinigamesCore.getApi().getPlayerManager().getGamePlayer();
         if (gamePlayers.size() < 1) return false;
         float hunterPercent = infConfig.game.hunterPercent;
-        List<GamePlayer> humans = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).collect(Collectors.toList());
+        List<GamePlayer> humans = gamePlayers.stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).toList();
         int hunterSize = (int) Math.floor(gamePlayers.size() * hunterPercent);
         return hunterSize >= humans.size();
     }
 
     public void notifyHunters() {
-        Bukkit.getLogger().warning("[McInfected] Hunter is active!");
-        MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).collect(Collectors.toList()).forEach(g -> {
+        MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).toList().forEach(g -> {
             Player player = g.getPlayer();
+            Bukkit.getLogger().warning("notifying hunters: "+player.getName());
             player.setGlowing(true);
             MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.hunter.get("Active").split(":"));
             Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(5), Duration.ofSeconds(0));
@@ -77,10 +76,11 @@ public class HunterManager {
             player.showTitle(t);
         });
         this.notified = true;
+        Bukkit.getLogger().info("notify is now: "+this.notified);
     }
 
-    public boolean isNotified() {
-        return notified;
+    public boolean isNotNotified() {
+        return !notified;
     }
 
     public void updateHunterBossBar() {
@@ -94,8 +94,11 @@ public class HunterManager {
     }
 
     public void activateHunter(Player player) {
-        if (!shouldHunterActive()) return;
-        Bukkit.getLogger().warning("Activate Hunter");
+        if (!shouldHunterActive()) {
+            Bukkit.getLogger().info("hunter not active for player: "+player.getName()+", ignored.");
+            return;
+        }
+        Bukkit.getLogger().warning("Activating hunter Hunter for "+player.getName());
         MinigamesCore.getApi().getPlayerManager().findPlayer(player).ifPresent(g -> {
             String hunterKit = infConfig.defaultKit.get("hunter");
             String using = McInfected.getApi().currentKit(g.getPlayer());
@@ -105,7 +108,6 @@ public class HunterManager {
             Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(1), Duration.ofSeconds(0));
             Title t = Title.title(Component.empty(), Component.text("§b已化身成幽靈獵手。"), time);
             player.showTitle(t);
-            player.setGlowing(true);
             Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).ifPresent(a -> {
                 a.setBaseValue(2048);
                 player.setHealth(a.getBaseValue());

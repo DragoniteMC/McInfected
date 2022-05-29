@@ -44,6 +44,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -69,7 +70,7 @@ public class McInfListener implements Listener {
     private final HunterManager hunterManager;
     private double multiplier = 0.0;
 
-    private AsyncEconomyService economyService = ELDependenci.getApi().exposeService(AsyncEconomyService.class);
+    private final AsyncEconomyService economyService = ELDependenci.getApi().exposeService(AsyncEconomyService.class);
 
     public McInfListener(YamlManager yamlManager, AirDropManager airDropManager, HunterManager hunterManager) {
         this.infConfig = yamlManager.getConfigAs(InfConfig.class);
@@ -110,12 +111,11 @@ public class McInfListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onClick(InventoryClickEvent e) {
         switch (e.getAction()) {
-            case DROP_ALL_CURSOR:
-            case DROP_ONE_CURSOR:
+            case DROP_ALL_CURSOR, DROP_ONE_CURSOR -> {
                 e.setCancelled(true);
-                return;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
     }
 
@@ -132,8 +132,12 @@ public class McInfListener implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageEvent e) {
-        if (MinigamesCore.getApi().getGameManager().getInGameState() == McInfected.getPlugin(McInfected.class).getGameEndState())
+        if (MinigamesCore.getApi().getGameManager().getInGameState() == McInfected.getPlugin(McInfected.class).getGameEndState()) {
+            Bukkit.getLogger().info("game end, cancelled");
             e.setCancelled(true);
+        }else if (MinigamesCore.getApi().getGameManager().getGameState() == GameState.IN_GAME){
+            e.setCancelled(false);
+        }
     }
 
 
@@ -153,16 +157,16 @@ public class McInfListener implements Listener {
         VotingTask.addPlayer(player);
         Location loc = null;
         switch (state) {
-            case PRESTART:
+            case PRESTART -> {
                 playerManager.setGamePlayer(player);
                 player.castTo(TeamPlayer.class).setTeam(McInfected.getPlugin(McInfected.class).getHumanTeam());
                 List<Location> locs = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("human");
                 loc = locs.get(Tools.randomWithRange(0, locs.size() - 1));
-                break;
-            case IN_GAME:
+            }
+            case IN_GAME -> {
                 playerManager.setSpectator(player);
                 loc = playerManager.getGamePlayer().get(Tools.randomWithRange(0, playerManager.getGamePlayer().size() - 1)).getPlayer().getLocation();
-                break;
+            }
         }
         if (loc != null) player.getPlayer().teleportAsync(loc);
     }
@@ -207,6 +211,20 @@ public class McInfListener implements Listener {
         if (using != null && using.equals(hunterKit)) return;
         final double originalDamage = e.getDamage();
         e.setDamage(originalDamage * (1 + multiplier));
+    }
+
+    @EventHandler
+    public void onDamageTest(EntityDamageByEntityEvent e){
+        Bukkit.getLogger().info("damage cancelled: "+e.isCancelled());
+        if (!(e.getEntity() instanceof Player player)) return;
+        MinigamesCore.getApi().getPlayerManager().findPlayer(player).ifPresent(gp -> {
+            Bukkit.getLogger().info("player "+player.getName()+" team: "+gp.castTo(TeamPlayer.class).getTeam().getTeamName());
+        });
+        if (!(e.getDamager() instanceof Player damager)) return;
+        MinigamesCore.getApi().getPlayerManager().findPlayer(damager).ifPresent(gp -> {
+            Bukkit.getLogger().info("damager "+damager.getName()+" team: "+gp.castTo(TeamPlayer.class).getTeam().getTeamName());
+        });
+
     }
 
     @EventHandler(ignoreCancelled = true)

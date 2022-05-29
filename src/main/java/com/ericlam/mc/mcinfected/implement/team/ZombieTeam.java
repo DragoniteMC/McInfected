@@ -2,6 +2,7 @@ package com.ericlam.mc.mcinfected.implement.team;
 
 import com.ericlam.mc.minigames.core.game.GameTeam;
 import org.bukkit.ChatColor;
+import org.bukkit.scoreboard.Team;
 
 public class ZombieTeam implements GameTeam {
     @Override
@@ -19,8 +20,9 @@ public class ZombieTeam implements GameTeam {
         return false;
     }
 
+
     @Override
-    public boolean isEnabledFriendlyInvisibles() {
-        return false;
+    public void onTeamCreate(Team team) {
+        team.setCanSeeFriendlyInvisibles(false);
     }
 }
