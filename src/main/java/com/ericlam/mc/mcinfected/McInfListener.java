@@ -133,7 +133,6 @@ public class McInfListener implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent e) {
         if (MinigamesCore.getApi().getGameManager().getInGameState() == McInfected.getPlugin(McInfected.class).getGameEndState()) {
-            Bukkit.getLogger().info("game end, cancelled");
             e.setCancelled(true);
         }
     }
@@ -211,20 +210,6 @@ public class McInfListener implements Listener {
         e.setDamage(originalDamage * (1 + multiplier));
     }
 
-    @EventHandler
-    public void onDamageTest(EntityDamageByEntityEvent e){
-        Bukkit.getLogger().info("damage cancelled: "+e.isCancelled());
-        if (!(e.getEntity() instanceof Player player)) return;
-        MinigamesCore.getApi().getPlayerManager().findPlayer(player).ifPresent(gp -> {
-            Bukkit.getLogger().info("player "+player.getName()+" team: "+gp.castTo(TeamPlayer.class).getTeam().getTeamName());
-        });
-        if (!(e.getDamager() instanceof Player damager)) return;
-        MinigamesCore.getApi().getPlayerManager().findPlayer(damager).ifPresent(gp -> {
-            Bukkit.getLogger().info("damager "+damager.getName()+" team: "+gp.castTo(TeamPlayer.class).getTeam().getTeamName());
-        });
-
-    }
-
     @EventHandler(ignoreCancelled = true)
     public void onWeaponEntityDamage(WeaponDamageEntityEvent e) {
         if (!(e.getVictim() instanceof Player)) return;
@@ -295,7 +280,7 @@ public class McInfListener implements Listener {
                 hunterManager.updateHunterBossBar();
                 return;
             }
-            player.setGameMode(GameMode.SPECTATOR);
+            MinigamesCore.getApi().getPlayerManager().setSpectator(victim);
             player.sendMessage(msg.get("Game.Respawn"));
             Bukkit.getScheduler().runTaskLater(McInfected.getPlugin(McInfected.class), () -> {
                 MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.respawn.split(":"));
@@ -303,7 +288,7 @@ public class McInfListener implements Listener {
                 List<Location> respawn = MinigamesCore.getApi().getArenaManager().getFinalArena().getWarp("zombie");
                 //McInfected.getApi().removePreviousKit(player, true);
                 player.teleportAsync(respawn.get(Tools.randomWithRange(0, respawn.size() - 1)));
-                player.setGameMode(GameMode.ADVENTURE);
+                MinigamesCore.getApi().getPlayerManager().setGamePlayer(victim.castTo(McInfPlayer.class));
                 //McInfected.getApi().gainKit(victim.castTo(McInfPlayer.class));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1, false, false));
             }, 60L);

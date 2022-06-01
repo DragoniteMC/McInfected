@@ -28,7 +28,6 @@ public class SoundUtils {
 
     private static void play(@Nullable String[] sound) {
         if (sound == null) {
-            Bukkit.getLogger().warning("the Sound is null");
             return;
         }
         Bukkit.getOnlinePlayers().forEach(p -> MinigamesCore.getApi().getGameUtils().playSound(p, sound));

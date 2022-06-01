@@ -56,15 +56,9 @@ public class SkillListener implements Listener {
     @EventHandler
     public void onGamePlayerDeath(GamePlayerDeathEvent e) {
         McInfectedAPI api = McInfected.getApi();
-        if (e.getKiller() == null) {
-            Bukkit.getLogger().info("killer is null");
-            return;
-        }
+        if (e.getKiller() == null) return;
         GamePlayer killer = e.getKiller();
-        if (!(killer.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam)) {
-            Bukkit.getLogger().info("killer is not human");
-            return;
-        }
+        if (!(killer.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam)) return;
         if (!hunterManager.shouldHunterActive()) return;
         boolean melee = false;
         if (e instanceof CrackShotDeathEvent cs) {
@@ -72,8 +66,6 @@ public class SkillListener implements Listener {
         }
         if (melee) {
             Bukkit.getOnlinePlayers().forEach(p -> gameUtils.playSound(p, infConfig.sounds.hunter.get("Kill").split(":")));
-        }else{
-            Bukkit.getLogger().info("killer using weapon is not melee");
         }
     }
 }

@@ -56,7 +56,6 @@ public class HunterManager {
 
     public boolean shouldHunterActive() {
         //if (notified) return false;
-        Bukkit.getLogger().warning("notified:" + notified);
         var gamePlayers = MinigamesCore.getApi().getPlayerManager().getGamePlayer();
         if (gamePlayers.size() < 1) return false;
         float hunterPercent = infConfig.game.hunterPercent;
@@ -68,7 +67,6 @@ public class HunterManager {
     public void notifyHunters() {
         MinigamesCore.getApi().getPlayerManager().getGamePlayer().stream().filter(g -> g.castTo(TeamPlayer.class).getTeam() instanceof HumanTeam).toList().forEach(g -> {
             Player player = g.getPlayer();
-            Bukkit.getLogger().warning("notifying hunters: "+player.getName());
             player.setGlowing(true);
             MinigamesCore.getApi().getGameUtils().playSound(player, infConfig.sounds.hunter.get("Active").split(":"));
             Title.Times time = Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(5), Duration.ofSeconds(0));
@@ -76,7 +74,6 @@ public class HunterManager {
             player.showTitle(t);
         });
         this.notified = true;
-        Bukkit.getLogger().info("notify is now: "+this.notified);
     }
 
     public boolean isNotNotified() {
@@ -94,11 +91,7 @@ public class HunterManager {
     }
 
     public void activateHunter(Player player) {
-        if (!shouldHunterActive()) {
-            Bukkit.getLogger().info("hunter not active for player: "+player.getName()+", ignored.");
-            return;
-        }
-        Bukkit.getLogger().warning("Activating hunter Hunter for "+player.getName());
+        if (!shouldHunterActive()) return;
         MinigamesCore.getApi().getPlayerManager().findPlayer(player).ifPresent(g -> {
             String hunterKit = infConfig.defaultKit.get("hunter");
             String using = McInfected.getApi().currentKit(g.getPlayer());

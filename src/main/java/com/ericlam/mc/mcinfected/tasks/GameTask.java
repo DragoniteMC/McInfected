@@ -88,7 +88,6 @@ public class GameTask extends InfTask {
         VotingTask.bossBar.setProgress((double) l / getTotalTime());
         VotingTask.updateBoard(l, playerManager.getGamePlayer(), "&c母體已出現");
         if (hunterManager.shouldHunterActive() && hunterManager.isNotNotified()) {
-            Bukkit.getLogger().info("hunter should active, notifying players");
             VotingTask.bossBar.setVisible(false);
             hunterManager.setBarVisible(true);
             hunterManager.updateHunterBossBar();
